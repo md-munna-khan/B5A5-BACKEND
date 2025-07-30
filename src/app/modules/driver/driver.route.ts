@@ -50,7 +50,7 @@ router.delete(
 // Update online status (driver only)
 router.patch(
   "/:id/online-status",
-  checkAuth(Role.DRIVER),
+  checkAuth(Role.SUPER_ADMIN),
   DriverControllers.updateOnlineStatus
 );
 
