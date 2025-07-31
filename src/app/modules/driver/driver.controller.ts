@@ -10,15 +10,36 @@ import { JwtPayload } from "jsonwebtoken";
 import { catchAsync } from "../../utils/catchAsync";
 import { DriverService } from "./driver.service";
 
-const createDriver = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-  const result = await DriverService.createDriver(req.body);
+
+// Apply as Driver (for RIDERs)
+const applyAsDriver = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  const user = req.user as JwtPayload;
+
+  const result = await DriverService.applyAsDriver(user, req.body);
+
   sendResponse(res, {
     success: true,
-    statusCode: httpStatus.CREATED,
-    message: "Driver created successfully",
+    statusCode: httpStatus.OK,
+    message: "Driver application submitted successfully",
     data: result,
   });
 });
+
+// Approve Driver (for ADMINs)
+const approveDriver = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  const driverId = req.params.id;
+
+  const result = await DriverService.approveDriver(driverId);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Driver approved and role updated successfully",
+    data: result,
+  });
+});
+
+
 
 const getAllDrivers = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const query = req.query;
@@ -124,7 +145,9 @@ const updateLocation = catchAsync(async (req: Request, res: Response, next: Next
   });
 });
 export const DriverControllers = {
-  createDriver,
+  applyAsDriver,
+  approveDriver,
+ 
   getAllDrivers,
   getSingleDriver,
   updateDriver,

@@ -9,33 +9,43 @@ import { DriverControllers } from "./driver.controller";
 
 const router = Router();
 
-// Create Driver (admin or super admin only)
+// Rider applies to be a driver
 router.post(
-  "/create",
-  checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+  "/apply",
+  checkAuth(Role.RIDER),
   multerUpload.array("files"),
   validateRequest(createDriverZodSchema),
-  DriverControllers.createDriver
+  DriverControllers.applyAsDriver
 );
+
+// Admin approves a driver application
+router.patch(
+  "/:id/approve",
+  checkAuth(Role.ADMIN),
+  DriverControllers.approveDriver
+);
+
+
+
 
 // Get all drivers (admin, super admin)
 router.get(
   "/",
-  checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+  checkAuth(Role.ADMIN),
   DriverControllers.getAllDrivers
 );
 
 // Get single driver by ID (admin, super admin, or the driver themself)
 router.get(
   "/:id",
-  checkAuth(Role.ADMIN, Role.SUPER_ADMIN, Role.DRIVER),
+  checkAuth(Role.ADMIN,  Role.DRIVER),
   DriverControllers.getSingleDriver
 );
 
 // Update driver info (admin, super admin)
 router.patch(
   "/:id",
-  checkAuth(Role.ADMIN, Role.SUPER_ADMIN,Role.DRIVER),
+  checkAuth(Role.ADMIN, Role.DRIVER),
   validateRequest(updateDriverZodSchema),
   DriverControllers.updateDriver
 );
@@ -43,14 +53,14 @@ router.patch(
 // Delete a driver (super admin only)
 router.delete(
   "/:id",
-  checkAuth(Role.SUPER_ADMIN),
+  checkAuth(Role.ADMIN),
   DriverControllers.deleteDriver
 );
 
 // Update online status (driver only)
 router.patch(
   "/:id/online-status",
-  checkAuth(Role.SUPER_ADMIN),
+  checkAuth(Role.DRIVER),
   DriverControllers.updateOnlineStatus
 );
 

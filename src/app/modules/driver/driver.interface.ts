@@ -15,7 +15,7 @@ export interface IDriver {
   };
 
   onlineStatus?: 'Active' | 'Offline';
-  ridingStatus?:  'waiting_for_pickup' | 'in_transit' | 'Complete';
+  ridingStatus?: "idle" | 'waiting_for_pickup' | 'in_transit' | 'Complete';
   isOnRide?: boolean;
   totalEarning?: number;
 

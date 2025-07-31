@@ -15,6 +15,7 @@ import { envVars } from "../../config/env";
 import passport from "passport";
 
 
+
 const credentialsLogin = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
     passport.authenticate("local", async (err: any, user: any, info: any) => {
@@ -23,6 +24,7 @@ const credentialsLogin = catchAsync(async (req: Request, res: Response, next: Ne
 
             return next(new AppError(401, err))
         }
+
 
         if (!user) {
             // console.log("from !user");

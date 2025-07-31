@@ -1,38 +1,39 @@
-import { Types } from "mongoose"
+import { Types } from "mongoose";
 
 export enum Role {
-    SUPER_ADMIN = "SUPER_ADMIN",
-    ADMIN = "ADMIN",
-    RIDER = "RIDER",
-    DRIVER = "DRIVER",
+  ADMIN = "ADMIN",
+  RIDER = "RIDER",
+  DRIVER = "DRIVER"
 }
 
-
-export enum IsActive {
-    ACTIVE = "ACTIVE",
-    INACTIVE = "INACTIVE",
-    BLOCKED = "BLOCKED"
+export enum UserStatus {
+  BLOCKED = "BLOCKED",
+  UNBLOCKED = "UNBLOCKED"
 }
-
 
 export interface IAuthProvider {
-    provider: "google" | "credentials";
-    providerId: string
-
+  provider: "google" | "credentials";
+  providerId: string;
 }
+
 export interface IUser {
-    _id?: Types.ObjectId,
-    name: string,
-    email: string,
-    password?: string,
-    phone?: string,
-    picture?: string,
-    address?: string,
-    isDeleted?: boolean,
-    isActive?: IsActive,
-    isVerified?: boolean,
-    role: Role
-    auths: IAuthProvider[],
-    createdAt ? : Date,
-    updatedAt?: Date
+  _id?: Types.ObjectId;
+ 
+  name: string;
+  email: string;
+  password: string; // Will be hashed with bcryptjs
+  role: Role; // Default: RIDER
+  isVerified?: boolean; // Default: false
+  location?: {
+    lat: number;
+    lng: number;
+    address?: string;
+  };
+  isDeleted:boolean,
+  picture:string,
+  auths?: IAuthProvider[];
+  phone?: string;
+  status?: UserStatus; // Default: UNBLOCKED
+  createdAt?: Date;
+  updatedAt?: Date;
 }

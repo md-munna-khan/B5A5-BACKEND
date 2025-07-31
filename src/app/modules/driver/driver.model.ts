@@ -4,9 +4,7 @@ const DriverSchema = new Schema(
   {
     userId: {
       type: Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-      unique: true,
+      ref: 'User'
     },
     vehicle: {
       vehicleNumber: { type: String, required: true },

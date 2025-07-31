@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 
 import AppError from "../../errorHelpers/AppError";
@@ -5,16 +6,58 @@ import { Driver } from "./driver.model";
 import httpStatus from "http-status-codes";
 import { QueryBuilder } from "../../utils/QueryBuilder";
 import { IDriver } from "./driver.interface";
+import { User } from "../user/user.model";
 
-const createDriver = async (payload: Partial<IDriver>) => {
-  const isDriverExist = await Driver.findOne({ userId: payload.userId });
-  if (isDriverExist) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Driver already exists");
+const applyAsDriver = async (user: any, payload: IDriver) => {
+  // Check if user has already applied
+  const existing = await Driver.findOne({ userId: user.userId });
+  if (existing) {
+    throw new AppError(httpStatus.BAD_REQUEST, "You have already applied as a driver");
   }
 
-  const driver = await Driver.create(payload);
+  const driverData = {
+    ...payload,
+    userId: user.userId,
+    status: "Pending", // initially pending
+  };
+
+  // console.log(driverData)
+
+  const newDriver = await Driver.create(driverData);
+  return newDriver;
+};
+
+const approveDriver = async (driverId: string) => {
+  const driver = await Driver.findById(driverId);
+
+  if (!driver) {
+    throw new AppError(httpStatus.NOT_FOUND, "Driver not found");
+  }
+
+  if (driver.status === "Approved") {
+    throw new AppError(httpStatus.BAD_REQUEST, "Driver is already approved");
+  }
+
+  // Update the driver status
+  driver.status = "Approved";
+  await driver.save();
+
+  // Update the user's role to 'driver'
+  await User.findByIdAndUpdate(driver.userId, { role: "DRIVER" });
+
   return driver;
 };
+
+
+// const createDriver = async (payload: Partial<IDriver>) => {
+//   const isDriverExist = await Driver.findOne({ userId: payload.userId });
+//   if (isDriverExist) {
+//     throw new AppError(httpStatus.BAD_REQUEST, "Driver already exists");
+//   }
+
+//   const driver = await Driver.create(payload);
+//   return driver;
+// };
 
 const getAllDrivers = async (query: Record<string, string>) => {
   const queryBuilder = new QueryBuilder(Driver.find(), query);
@@ -104,7 +147,9 @@ const updateLocation = async (driverId: string, location: { lat: number; lng: nu
 
 
 export const DriverService = {
-  createDriver,
+  applyAsDriver,
+  approveDriver,
+  // createDriver,
   getAllDrivers,
   getSingleDriver,
   updateDriver,

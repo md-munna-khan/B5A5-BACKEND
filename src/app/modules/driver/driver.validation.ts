@@ -1,8 +1,6 @@
 import z from "zod";
 
 export const createDriverZodSchema = z.object({
-  userId: z.string({ required_error: "User ID is required" }), // Must be valid ObjectId format in controller
-
   vehicle: z.object({
     vehicleNumber: z
       .string({ required_error: "Vehicle number is required" })
@@ -21,7 +19,7 @@ export const createDriverZodSchema = z.object({
       .number({ invalid_type_error: "Longitude must be a number" })
       .min(-180)
       .max(180),
-  }),
+  }).optional(),
 
   onlineStatus: z
     .enum(["Active", "Offline"])

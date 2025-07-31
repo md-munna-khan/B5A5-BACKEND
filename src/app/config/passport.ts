@@ -3,7 +3,7 @@
 import { Strategy as GoogleStrategy, Profile, VerifyCallback } from "passport-google-oauth20";
 import { envVars } from "./env";
 import { User } from "../modules/user/user.model";
-import { IsActive, Role } from "../modules/user/user.interface";
+import {  Role, UserStatus } from "../modules/user/user.interface";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import bcryptjs from 'bcryptjs';
@@ -30,13 +30,13 @@ passport.use(
                 }
 
 
-                if (isUserExist.isActive === IsActive.BLOCKED || isUserExist.isActive === IsActive.INACTIVE) {
-                    return done(`User Is ${isUserExist.isActive}`)
-                }
+                if (isUserExist && isUserExist.status === UserStatus.BLOCKED) {
+        return done(null, false, { message: `User is ${isUserExist.status}` });
+         }
                 if (isUserExist.isDeleted) {
                     return done(`User Is Deleted`)
                 }
-                const isGoogleAuthenticated = isUserExist.auths.some(providerObjects => providerObjects.provider == "google")
+                const isGoogleAuthenticated = isUserExist.auths?.some(providerObjects => providerObjects.provider == "google")
 
                 if (isGoogleAuthenticated && !isUserExist.password) {
                     return done(null, false, { message: "You have authenticated through Google. So if you want to login with credentials, then at first login with google and set a password for your Gmail and then you can login with email and password." })
@@ -79,9 +79,9 @@ passport.use(
                     return done(null, false, { message: "User is not verified" })
                 }
 
-                if (isUserExist && (isUserExist.isActive === IsActive.BLOCKED || isUserExist.isActive === IsActive.INACTIVE)) {
-                    done(`User is ${isUserExist.isActive}`)
-                }
+               if (isUserExist && isUserExist.status === UserStatus.BLOCKED) {
+        return done(null, false, { message: `User is ${isUserExist.status}` });
+         }
 
                 if (isUserExist && isUserExist.isDeleted) {
                     return done(null, false, { message: "User is deleted" })
