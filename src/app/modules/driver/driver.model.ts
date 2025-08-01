@@ -11,8 +11,16 @@ const DriverSchema = new Schema(
       vehicleType: { type: String, enum: ['Bike', 'Car'], required: true },
     },
     location: {
-      lat: { type: Number, required: true },
-      lng: { type: Number, required: true },
+      type: {
+        type: String,
+        enum: ['Point'],
+        required: true,
+        default: 'Point',
+      },
+      coordinates: {
+        type: [Number, Number],
+        required: true,
+      },
     },
     onlineStatus: {
       type: String,
@@ -32,13 +40,8 @@ const DriverSchema = new Schema(
       type: Number,
       default: 0,
     },
-    nid: {
-      type: String, // Cloudinary image URL
-      required: true,
-    },
     drivingLicense: {
-      type: String, // Cloudinary image URL
-      required: true,
+      type: String,
     },
     status: {
       type: String,

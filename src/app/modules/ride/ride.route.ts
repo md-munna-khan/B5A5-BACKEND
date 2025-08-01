@@ -10,7 +10,7 @@ const router = Router();
 // Rider creates a ride request
 router.post(
   "/request",
-  checkAuth(Role.RIDER),
+  checkAuth(Role.RIDER,Role.DRIVER,Role.ADMIN),
   validateRequest(createRideZodSchema),
   RideControllers.requestRide
 );
@@ -29,6 +29,12 @@ router.get(
   RideControllers.getRiderRides
 );
 
+router.get(
+  "/earnings/me",
+  checkAuth(Role.DRIVER),
+  RideControllers.getDriverEarnings
+);
+
 // Driver views available rides to accept
 router.get(
   "/available",
@@ -42,6 +48,13 @@ router.patch(
   checkAuth(Role.DRIVER),
   RideControllers.acceptRide
 );
+
+router.patch(
+  "/:id/reject",
+  checkAuth(Role.DRIVER),
+  RideControllers.rejectRide
+);
+
 
 // Driver marks pickup complete
 router.patch(
@@ -77,5 +90,9 @@ router.get(
   checkAuth(Role.ADMIN),
   RideControllers.getAllRides
 );
+
+// router.patch("/:id/location",checkAuth(Role.DRIVER),
+//  RideControllers.getAllRides
+// )
 
 export const RideRoutes = router;

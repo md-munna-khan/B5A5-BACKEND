@@ -6,25 +6,43 @@ import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import { JwtPayload } from "jsonwebtoken";
 
-const requestRide = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-  const rider = req.user as JwtPayload;
-  const riderId  = rider.userId 
-  const rideData = req.body;
-  const result = await RideService.requestRide(riderId, rideData);
+// const requestRide = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+//   const rider = req.user as JwtPayload;
+//   const riderId  = rider.userId 
+//   const rideData = req.body;
+//   const result = await RideService.requestRide(riderId, rideData);
 
-  sendResponse(res, {
-    success: true,
-    statusCode: httpStatus.CREATED,
-    message: "Ride requested successfully",
-    data: result,
-  });
-});
+//   sendResponse(res, {
+//     success: true,
+//     statusCode: httpStatus.CREATED,
+//     message: "Ride requested successfully",
+//     data: result,
+//   });
+// });
+
+ const requestRide = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const rider = req.user as JwtPayload;
+    const riderId = rider.userId;
+    const rideData = req.body;
+
+    const result = await RideService.requestRide(riderId, rideData);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.CREATED,
+      message: "Ride requested and driver matched successfully",
+      data: result,
+    });
+  }
+);
+
 
 const cancelRide = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
  const rider = req.user as JwtPayload;
   const riderId  = rider.userId 
-  const rideId = req.params.id;
-  const result = await RideService.cancelRide(riderId, rideId);
+  const ridesId = req.params.id;
+  const result = await RideService.cancelRide(riderId, ridesId);
 
   sendResponse(res, {
     success: true,
@@ -68,6 +86,21 @@ const acceptRide = catchAsync(async (req: Request, res: Response, next: NextFunc
     success: true,
     statusCode: httpStatus.OK,
     message: "Ride accepted successfully",
+    data: result,
+  });
+});
+
+const rejectRide = catchAsync(async (req: Request, res: Response) => {
+  const { id: rideId } = req.params;
+  const driver = req.user as JwtPayload;
+  const driverId = driver.userId;
+
+  const result = await RideService.rejectRide(rideId, driverId);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Ride rejected successfully",
     data: result,
   });
 });
@@ -138,12 +171,31 @@ const getAllRides = catchAsync(async (_req: Request, res: Response, next: NextFu
   });
 });
 
+const getDriverEarnings = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const driver = req.user as JwtPayload;
+    const driverId = driver.userId;
+
+    const result = await RideService.getDriverEarnings(driverId);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Driver earnings retrieved successfully",
+      data: result,
+    });
+  }
+);
+
+
 export const RideControllers = {
+  getDriverEarnings,
   requestRide,
   cancelRide,
   getRiderRides,
   getAvailableRides,
   acceptRide,
+  rejectRide,
   pickUpRide,
   markInTransit,
   completeRide,

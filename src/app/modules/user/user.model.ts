@@ -29,7 +29,7 @@ const userSchema = new Schema<IUser>(
 
     isVerified: {
       type: Boolean,
-      default: false,
+      default: true,
     },
 
     location: {

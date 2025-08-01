@@ -10,16 +10,11 @@ export const createDriverZodSchema = z.object({
     }),
   }),
 
-  location: z.object({
-    lat: z
-      .number({ invalid_type_error: "Latitude must be a number" })
-      .min(-90)
-      .max(90),
-    lng: z
-      .number({ invalid_type_error: "Longitude must be a number" })
-      .min(-180)
-      .max(180),
-  }).optional(),
+location: z.object({
+  type: z.literal('Point'),
+  coordinates: z.tuple([z.number(), z.number()])
+}),
+
 
   onlineStatus: z
     .enum(["Active", "Offline"])
@@ -36,17 +31,6 @@ export const createDriverZodSchema = z.object({
     .min(0)
     .default(0)
     .optional(),
-
-  nid: z
-    .string({ required_error: "NID image URL is required" })
-    .url({ message: "NID must be a valid URL (Cloudinary)" })
-    .optional(),
-
-  drivingLicense: z
-    .string({ required_error: "Driving license image URL is required" })
-    .url({ message: "Driving license must be a valid URL (Cloudinary)" })
-    .optional(),
-
   status: z
     .enum(["Approved", "Pending", "Suspended"])
     .optional(),
@@ -67,13 +51,11 @@ export const updateDriverZodSchema = z.object({
     })
     .optional(),
 
-  location: z
-    .object({
-      lat: z.number().min(-90).max(90),
-      lng: z.number().min(-180).max(180),
-    })
-    .partial()
-    .optional(),
+location: z.object({
+  type: z.literal('Point'),
+  coordinates: z.tuple([z.number(), z.number()])
+}),
+
 
   onlineStatus: z.enum(["Active", "Offline"]).optional(),
 
@@ -85,9 +67,9 @@ export const updateDriverZodSchema = z.object({
 
   totalEarning: z.number().min(0).optional(),
 
-  nid: z.string().url().optional(),
+  nid: z.string().optional(),
 
-  drivingLicense: z.string().url().optional(),
+  drivingLicense: z.string().optional(),
 
   status: z.enum(["Approved", "Pending", "Suspended"]).optional(),
 

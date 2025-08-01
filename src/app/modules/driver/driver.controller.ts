@@ -15,7 +15,14 @@ import { DriverService } from "./driver.service";
 const applyAsDriver = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const user = req.user as JwtPayload;
 
-  const result = await DriverService.applyAsDriver(user, req.body);
+  const payload =  {
+    ...req.body,
+    drivingLicense: req.file?.path,
+  }
+
+  console.log(payload)
+
+  const result = await DriverService.applyAsDriver(user, payload);
 
   sendResponse(res, {
     success: true,
@@ -39,7 +46,17 @@ const approveDriver = catchAsync(async (req: Request, res: Response, next: NextF
   });
 });
 
+const suspendDriver = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await DriverService.suspendDriver(id);
 
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Driver suspended successfully',
+    data: result,
+  });
+});
 
 const getAllDrivers = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const query = req.query;
@@ -133,9 +150,8 @@ const updateRidingStatus = catchAsync(async (req: Request, res: Response, next: 
 // Update location
 const updateLocation = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const driverId = req.params.id;
-  const location = req.body.location; // expecting { lat: number, lng: number }
 
-  const updatedDriver = await DriverService.updateLocation(driverId, location);
+  const updatedDriver = await DriverService.updateLocation(driverId, req.body);
 
   sendResponse(res, {
     success: true,
@@ -144,10 +160,13 @@ const updateLocation = catchAsync(async (req: Request, res: Response, next: Next
     data: updatedDriver,
   });
 });
+
+
+
 export const DriverControllers = {
   applyAsDriver,
   approveDriver,
- 
+ suspendDriver,
   getAllDrivers,
   getSingleDriver,
   updateDriver,

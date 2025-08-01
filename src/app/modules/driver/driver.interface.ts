@@ -9,17 +9,16 @@ export interface IDriver {
     vehicleType: 'Bike' | 'Car';
   };
 
-  location?: {
-    lat: number;
-    lng: number;
-  };
+location?: {
+  type: 'Point';
+  coordinates: [number, number]; 
+};
+
 
   onlineStatus?: 'Active' | 'Offline';
   ridingStatus?: "idle" | 'waiting_for_pickup' | 'in_transit' | 'Complete';
   isOnRide?: boolean;
   totalEarning?: number;
-
-  nid?: string; 
   drivingLicense?: string; 
 
   status?: 'Approved' | 'Pending' | 'Suspended';

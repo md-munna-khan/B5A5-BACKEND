@@ -48,6 +48,28 @@ const approveDriver = async (driverId: string) => {
   return driver;
 };
 
+const suspendDriver = async (driverId: string) => {
+  const driver = await Driver.findById(driverId);
+
+  if (!driver) {
+    throw new AppError(httpStatus.NOT_FOUND, "Driver not found");
+  }
+
+  if (driver.status === "Suspended") {
+    throw new AppError(httpStatus.BAD_REQUEST, "Driver is already suspended");
+  }
+
+  // Update the driver status to 'Suspended'
+  driver.status = "Suspended";
+  await driver.save();
+
+  // Optional: Downgrade user role to 'USER'
+  await User.findByIdAndUpdate(driver.userId, { role: "USER" });
+
+  return driver;
+};
+
+
 
 // const createDriver = async (payload: Partial<IDriver>) => {
 //   const isDriverExist = await Driver.findOne({ userId: payload.userId });
@@ -130,26 +152,30 @@ const updateRidingStatus = async (
   return driver;
 };
 
-const updateLocation = async (driverId: string, location: { lat: number; lng: number }) => {
+const updateLocation = async (driverId: string, payload : any) => {
+  const location = payload
+  console.log(location)
   const driver = await Driver.findById(driverId);
   if (!driver) {
     throw new AppError(httpStatus.NOT_FOUND, "Driver not found");
   }
 
-  if (!location || typeof location.lat !== 'number' || typeof location.lng !== 'number') {
-    throw new AppError(httpStatus.BAD_REQUEST, "Invalid location data");
-  }
-
-  driver.location = location;
+  driver.location = {
+    type: 'Point',
+    coordinates: [location.coordinates[0], location.coordinates[1]],
+  };
   await driver.save();
   return driver;
 };
 
 
+
+
 export const DriverService = {
   applyAsDriver,
   approveDriver,
-  // createDriver,
+ suspendDriver,
+
   getAllDrivers,
   getSingleDriver,
   updateDriver,

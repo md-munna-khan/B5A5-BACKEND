@@ -24,7 +24,7 @@ export interface IUser {
   password: string; // Will be hashed with bcryptjs
   role: Role; // Default: RIDER
   isVerified?: boolean; // Default: false
-  location?: {
+  location: {
     lat: number;
     lng: number;
     address?: string;

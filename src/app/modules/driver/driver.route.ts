@@ -13,7 +13,7 @@ const router = Router();
 router.post(
   "/apply",
   checkAuth(Role.RIDER),
-  multerUpload.array("files"),
+  multerUpload.single("file"),
   validateRequest(createDriverZodSchema),
   DriverControllers.applyAsDriver
 );
@@ -26,7 +26,8 @@ router.patch(
 );
 
 
-
+// Suspend driver
+router.patch('/:id/suspend', checkAuth(Role.ADMIN), DriverControllers.suspendDriver);
 
 // Get all drivers (admin, super admin)
 router.get(
@@ -34,6 +35,8 @@ router.get(
   checkAuth(Role.ADMIN),
   DriverControllers.getAllDrivers
 );
+
+
 
 // Get single driver by ID (admin, super admin, or the driver themself)
 router.get(
@@ -75,6 +78,7 @@ router.patch(
 router.patch(
   "/:id/location",
   checkAuth(Role.DRIVER),
+
   DriverControllers.updateLocation
 );
 

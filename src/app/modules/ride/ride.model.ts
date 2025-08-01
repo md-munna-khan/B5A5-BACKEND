@@ -3,12 +3,23 @@ import { IRide } from "./ride.interface";
 
 const locationSchema = new Schema(
   {
-    lat: { type: Number, required: true },
-    lng: { type: Number, required: true },
-    address: { type: String },
+    type: {
+      type: String,
+      enum: ['Point'],
+      required: true,
+      default: 'Point',
+    },
+    coordinates: {
+      type: [Number], // [longitude, latitude]
+      required: true,
+    },
+    address: {
+      type: String,
+    },
   },
   { _id: false }
 );
+
 
 const rideSchema = new Schema<IRide>(
   {
@@ -18,7 +29,7 @@ const rideSchema = new Schema<IRide>(
     destination: { type: locationSchema, required: true },
     rideStatus: {
       type: String,
-      enum: ["REQUESTED", "ACCEPTED", "COMPLETED", "CANCELLED","IN_TRANSIT","PICKED_UP"],
+      enum: ["REQUESTED", "ACCEPTED", "COMPLETED", "CANCELLED","IN_TRANSIT","PICKED_UP","Rejected"],
       default: "REQUESTED",
     },
     rejectedDrivers: [{ type: Schema.Types.ObjectId, ref: "User" }],
@@ -33,5 +44,7 @@ const rideSchema = new Schema<IRide>(
     timestamps: true,
   }
 );
+
+
 
 export const RideModel = model<IRide>("Ride", rideSchema);
