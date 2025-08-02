@@ -30,6 +30,7 @@ router.post(
 
 router.patch(
   "/:id/status",
+    checkAuth(Role.DRIVER),
   validateRequest(updateRideZodSchema),
   RideControllers.updateRideStatus
 );
@@ -55,7 +56,7 @@ router.get(
   RideControllers.getAvailableRides
 );
 // driver feedback
-router.post("/:rideId/driver-feedback", 
+router.post("/:rideId/driver-ratings", 
   checkAuth(Role.DRIVER),
   RideControllers.giveDriverFeedback);
 // rider feedback

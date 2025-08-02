@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import AppError from '../../errorHelpers/AppError';
-import { IAuthProvider, IsActive, IUser } from "../user/user.interface"
+import { IAuthProvider,  UserStatus } from "../user/user.interface"
 import httpStatus from 'http-status-codes';
 import { User } from "../user/user.model";
 import { generateToken, verifyToken } from "../../utils/jwt";
@@ -44,7 +44,7 @@ const setPassword = async (userId: string, plainPassword: string) => {
         throw new AppError(404, "User Not Found")
     }
 
-    if (user.password && user.auths.some(providerObject => providerObject.provider === "google")) {
+    if (user.password && user.auths?.some(providerObject => providerObject.provider === "google")) {
         throw new AppError(httpStatus.BAD_REQUEST, "You have already set you password. Now you can change the password from your profile password update")
     }
 
@@ -58,7 +58,7 @@ const setPassword = async (userId: string, plainPassword: string) => {
         providerId: user.email
     }
 
-    const auths: IAuthProvider[] = [...user.auths, credentialProvider]
+    const auths: IAuthProvider[] = [...user.auths!, credentialProvider]
 
     user.password = hashedPassword
 
@@ -76,8 +76,8 @@ const forgotPassword = async (email: string) => {
     if (!isUserExist.isVerified) {
         throw new AppError(httpStatus.BAD_REQUEST, "User is not verified")
     }
-    if (isUserExist.isActive === IsActive.BLOCKED || isUserExist.isActive === IsActive.INACTIVE) {
-        throw new AppError(httpStatus.BAD_REQUEST, `User is ${isUserExist.isActive}`)
+    if (isUserExist.status === UserStatus.BLOCKED ) {
+        throw new AppError(httpStatus.BAD_REQUEST, `User is ${isUserExist.status}`)
     }
     if (isUserExist.isDeleted) {
         throw new AppError(httpStatus.BAD_REQUEST, "User is deleted")

@@ -64,7 +64,7 @@ const suspendDriver = async (driverId: string) => {
   await driver.save();
 
   // Optional: Downgrade user role to 'USER'
-  await User.findByIdAndUpdate(driver.userId, { role: "USER" });
+  // await User.findByIdAndUpdate(driver.userId, { role: "USER" });
 
   return driver;
 };
