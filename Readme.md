@@ -109,7 +109,18 @@ npm run dev
 npm run build
 npm start
 
-# 🛠 API Endpoints
+## 🌐 Live API  
+**Base URL:**  
+https://assigment-b5-a5-munna.vercel.app
+
+
+## 🧪 API Testing & Documentation
+
+Test all endpoints easily using Postman.  
+👉 [View Postman Collection](https://www.postman.com/your-link)
+
+[text](<c:/Users/user/Downloads/Programs/B5-A5 Ride Mangement.postman_collection.json>)
+## 🛠 API Endpoints
  
  ## Auth Routes (/auth)
 | Method | Endpoint                       | Description                |
@@ -144,15 +155,15 @@ npm start
 | Method   | Endpoint                            | Description                         |
 | -------- | ----------------------------------- | ----------------------------------- |
 | `POST`   | `/api/v1/drivers/apply`             | Rider applies to become a driver    |
-| `PATCH`  | `/api/v1/drivers/:id/approve`       | Approve driver application (Admin)  |
-| `PATCH`  | `/api/v1/drivers/:id/suspend`       | Suspend driver (Admin)              |
+| `PATCH`  | `/api/v1/drivers/approve/:id`       | Approve driver application (Admin)  |
+| `PATCH`  | `/api/v1/drivers/suspend/:id`       | Suspend driver (Admin)              |
 | `GET`    | `/api/v1/drivers`                   | Get all drivers (Admin)             |
 | `GET`    | `/api/v1/drivers/:id`               | Get single driver details           |
 | `PATCH`  | `/api/v1/drivers/:id`               | Update driver details               |
 | `DELETE` | `/api/v1/drivers/:id`               | Delete driver (Admin)               |
-| `PATCH`  | `/api/v1/drivers/:id/online-status` | Update driver online/offline status |
-| `PATCH`  | `/api/v1/drivers/:id/riding-status` | Update driver riding status         |
-| `PATCH`  | `/api/v1/drivers/:id/location`      | Update driver current location      |
+| `PATCH`  | `/api/v1/drivers/online-status/:id` | Update driver online/offline status |
+| `PATCH`  | `/api/v1/drivers/riding-status/:id` | Update driver riding status         |
+| `PATCH`  | `/api/v1/drivers/location/:id`      | Update driver current location      |
 
 
 
@@ -172,7 +183,8 @@ Ride Routes (/rides)
 | `PATCH` | `/api/v1/rides/:id/reject`             | Reject a ride request                    |
 | `PATCH` | `/api/v1/rides/:id/pickup`             | Mark ride as picked up                   |
 | `PATCH` | `/api/v1/rides/:id/transit`            | Mark ride as in transit                  |
-| `PATCH` | `/api/v1/rides/:id/complete`           | Complete the ride                        |
+| `PATCH` | `/api/v1/rides/:id/complete`           | Complete the ride  
+| `PATCH` | `/api/v1/rides/:id/status`             | Update ride status (generic endpoint)|                      
 | `POST`  | `/api/v1/rides/:rideId/driver-ratings` | Give feedback for a driver               |
 | `PUT`   | `/api/v1/rides/:id/feedback`           | Give feedback for a rider                |
 
@@ -192,3 +204,4 @@ Ride Routes (/rides)
 ✅ Geo-based Driver Search
 
 ✅ Admin Dashboard with Analytics
+

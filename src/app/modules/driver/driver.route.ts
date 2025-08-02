@@ -69,7 +69,7 @@ router.patch(
 
 // Update riding status (driver only)
 router.patch(
-  "/:id/riding-status",
+  "/riding-status/:id",
   checkAuth(Role.DRIVER),
   DriverControllers.updateRidingStatus
 );
