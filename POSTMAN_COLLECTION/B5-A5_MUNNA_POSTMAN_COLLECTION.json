@@ -1,0 +1,1228 @@
+{
+	"info": {
+		"_postman_id": "a3c6344f-f372-4875-b0bf-7f8c1159ce2e",
+		"name": "B5-A5 Ride Mangement",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40149386"
+	},
+	"item": [
+		{
+			"name": "driver",
+			"item": [
+				{
+					"name": "DRIVER-WORKS",
+					"item": [
+						{
+							"name": "DRIVER-UPDATE",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjODViMjE0ZDRkYjEwMDA0Yjc3YjgiLCJlbWFpbCI6ImRyaXZlckBnbWFpbC5jb20iLCJyb2xlIjoiUklERVIiLCJpYXQiOjE3NTQwNDA1ODMsImV4cCI6MTc1NDEyNjk4M30.eA_bfdczTmRf08zhLmfKl3lsXL3uLUv2ONZfMdyCVtE",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"type\": \"Point\",\r\n    \"coordinates\": [90.39965510494435, 23.876727159226547]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/v1/drivers/688c85b214d4db10004b77b8",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"v1",
+										"drivers",
+										"688c85b214d4db10004b77b8"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "APPLY-FOR-DRIVER",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhkZWFiMDJkMjY5M2ZhNmE1ZTBhMGQiLCJlbWFpbCI6ImRyaXZlckBnbWFpbC5jb20iLCJyb2xlIjoiUklERVIiLCJpYXQiOjE3NTQxMzExNjksImV4cCI6MTc1NDIxNzU2OX0.GGJN6mG3pLmVh0UyahCKcCOW9NT0suyAKi9ARn2r1cM",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "data",
+											"value": "{\n  \"vehicle\": {\n    \"vehicleNumber\": \"DHA-123456\",\n    \"vehicleType\": \"Bike\"\n  },\n  \"location\": {\n    \"type\": \"Point\",\n    \"coordinates\": [0,0]\n  },\n\n  \"ridingStatus\": \"idle\",\n  \"isOnRide\": false,\n  \"totalEarning\": 0,\n  \"drivingLicense\": \"23214344567567667\",\n  \"rating\": 0\n}\n",
+											"type": "text"
+										},
+										{
+											"key": "file",
+											"type": "file",
+											"src": "/C:/Users/user/OneDrive/Pictures/Screenshots/Screenshot 2025-07-22 141046.png"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://assigment-b5-a5-munna.vercel.app/api/v1/drivers/apply",
+									"protocol": "https",
+									"host": [
+										"assigment-b5-a5-munna",
+										"vercel",
+										"app"
+									],
+									"path": [
+										"api",
+										"v1",
+										"drivers",
+										"apply"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "UPDATE-ONLINE-STATUS",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhkN2Q2Yzk2NWQ2NzRkMDIxMmM2OGUiLCJlbWFpbCI6ImRyaXZlckBnbWFpbC5jb20iLCJyb2xlIjoiRFJJVkVSIiwiaWF0IjoxNzU0MTA1ODAwLCJleHAiOjE3NTQxOTIyMDB9.5klAJJfl68skuFJ9o0eqs12iq4qAKNDoLJ8GJHdBQVc",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"onlineStatus\":\"Active\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://assigment-b5-a5-munna.vercel.app/api/v1/drivers/online-status/688deb032d2693fa6a5e0a1f",
+									"protocol": "https",
+									"host": [
+										"assigment-b5-a5-munna",
+										"vercel",
+										"app"
+									],
+									"path": [
+										"api",
+										"v1",
+										"drivers",
+										"online-status",
+										"688deb032d2693fa6a5e0a1f"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DRIVER-UPDATE-LOCATION",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhkZGYxMTJkOGRlYjEzMDYzMmQyNTIiLCJlbWFpbCI6ImRyaXZlckBnbWFpbC5jb20iLCJyb2xlIjoiRFJJVkVSIiwiaWF0IjoxNzU0MTI4MjcyLCJleHAiOjE3NTQyMTQ2NzJ9.gVS-YErXmxbtGkTwz7ts2yp-BOwFUYRlcx_GaOwPee8",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"type\": \"Point\",\r\n    \"coordinates\": [90.39965510494435, 23.876727159226547]\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://assigment-b5-a5-munna.vercel.app/api/v1/drivers/location/688deb032d2693fa6a5e0a1f",
+									"protocol": "https",
+									"host": [
+										"assigment-b5-a5-munna",
+										"vercel",
+										"app"
+									],
+									"path": [
+										"api",
+										"v1",
+										"drivers",
+										"location",
+										"688deb032d2693fa6a5e0a1f"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DRIVER-UPDATE-RIDING-STATUS",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhkYmViYmJhYTM4MTJhZGZkMDdjMzQiLCJlbWFpbCI6ImRyaXZlckBnbWFpbC5jb20iLCJyb2xlIjoiRFJJVkVSIiwiaWF0IjoxNzU0MTIwMTY3LCJleHAiOjE3NTQyMDY1Njd9.zFUwARsLE9tHfelYHXXKfbEXZqJTEhNXuvN19bHtgwU",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \r\n\"ridingStatus\":\"waiting_for_pickup\"\r\n\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://assigment-b5-a5-munna.vercel.app/api/v1/drivers/riding-status/688dbf34baa3812adfd07c40",
+									"protocol": "https",
+									"host": [
+										"assigment-b5-a5-munna",
+										"vercel",
+										"app"
+									],
+									"path": [
+										"api",
+										"v1",
+										"drivers",
+										"riding-status",
+										"688dbf34baa3812adfd07c40"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "ADMIN-WORKS",
+					"item": [
+						{
+							"name": "ADMIN-ROLE-APPROVE",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhkN2NlOTk2NWQ2NzRkMDIxMmM2OGEiLCJlbWFpbCI6InN1cGVyQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc1NDEwMzU1NSwiZXhwIjoxNzU0MTg5OTU1fQ.7EiJWI7YOM_4oyYTuKw710r2u6Nq7ZizDcf5h2ivAU0",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"status\":\"Approved\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://assigment-b5-a5-munna.vercel.app/api/v1/drivers/approve/688deb032d2693fa6a5e0a1f",
+									"protocol": "https",
+									"host": [
+										"assigment-b5-a5-munna",
+										"vercel",
+										"app"
+									],
+									"path": [
+										"api",
+										"v1",
+										"drivers",
+										"approve",
+										"688deb032d2693fa6a5e0a1f"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SINGLE-DRIVER",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhkN2NlOTk2NWQ2NzRkMDIxMmM2OGEiLCJlbWFpbCI6InN1cGVyQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc1NDEwMzU1NSwiZXhwIjoxNzU0MTg5OTU1fQ.7EiJWI7YOM_4oyYTuKw710r2u6Nq7ZizDcf5h2ivAU0",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://assigment-b5-a5-munna.vercel.app/api/v1/drivers/688db706baa3812adfd07bf8",
+									"protocol": "https",
+									"host": [
+										"assigment-b5-a5-munna",
+										"vercel",
+										"app"
+									],
+									"path": [
+										"api",
+										"v1",
+										"drivers",
+										"688db706baa3812adfd07bf8"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SUSPEND-DRIVER",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhkN2NlOTk2NWQ2NzRkMDIxMmM2OGEiLCJlbWFpbCI6InN1cGVyQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc1NDEwMzU1NSwiZXhwIjoxNzU0MTg5OTU1fQ.7EiJWI7YOM_4oyYTuKw710r2u6Nq7ZizDcf5h2ivAU0",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://assigment-b5-a5-munna.vercel.app/api/v1/drivers/suspend/688db706baa3812adfd07bf8",
+									"protocol": "https",
+									"host": [
+										"assigment-b5-a5-munna",
+										"vercel",
+										"app"
+									],
+									"path": [
+										"api",
+										"v1",
+										"drivers",
+										"suspend",
+										"688db706baa3812adfd07bf8"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "ALL-DRIVERS",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhkN2NlOTk2NWQ2NzRkMDIxMmM2OGEiLCJlbWFpbCI6InN1cGVyQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc1NDEwMzU1NSwiZXhwIjoxNzU0MTg5OTU1fQ.7EiJWI7YOM_4oyYTuKw710r2u6Nq7ZizDcf5h2ivAU0",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://assigment-b5-a5-munna.vercel.app/api/v1/drivers",
+									"protocol": "https",
+									"host": [
+										"assigment-b5-a5-munna",
+										"vercel",
+										"app"
+									],
+									"path": [
+										"api",
+										"v1",
+										"drivers"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Ride",
+			"item": [
+				{
+					"name": "ADMIN-WORKS",
+					"item": [
+						{
+							"name": "ADMIN-VIEW-ALL-RIDES",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhkN2NlOTk2NWQ2NzRkMDIxMmM2OGEiLCJlbWFpbCI6InN1cGVyQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc1NDEwMzU1NSwiZXhwIjoxNzU0MTg5OTU1fQ.7EiJWI7YOM_4oyYTuKw710r2u6Nq7ZizDcf5h2ivAU0",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:5000/api/v1/rides",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"v1",
+										"rides"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "RIDER-WORKS",
+					"item": [
+						{
+							"name": "RIDE-REQUEST",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhkYmVhOWJhYTM4MTJhZGZkMDdjMzAiLCJlbWFpbCI6InJpZGVyQGdtYWlsLmNvbSIsInJvbGUiOiJSSURFUiIsImlhdCI6MTc1NDExOTkxOSwiZXhwIjoxNzU0MjA2MzE5fQ.Fkg-dn2de7kKyasYYQ_zb8S-0XQxHquYsVrEjU1XTkI",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"pickupLocation\": {\r\n    \"type\": \"Point\",\r\n    \"coordinates\": [90.39965510494435, 23.876727159226547], \r\n    \"address\": \"Uttara, Dhaka\"\r\n  },\r\n  \"destination\": {\r\n    \"type\": \"Point\",\r\n    \"coordinates\": [90.4228, 23.7806],\r\n    \"address\": \"Dhanmondi, Dhaka\"\r\n  },\r\n  \"fare\": 150,\r\n  \"timestamps\": {\r\n    \"requestedAt\": \"2025-07-31T07:45:00.000Z\"\r\n  }\r\n}\r\n\r\n\r\n\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://assigment-b5-a5-munna.vercel.app/api/v1/rides/request",
+									"protocol": "https",
+									"host": [
+										"assigment-b5-a5-munna",
+										"vercel",
+										"app"
+									],
+									"path": [
+										"api",
+										"v1",
+										"rides",
+										"request"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "RIDE-CANCEL",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhkYmVhOWJhYTM4MTJhZGZkMDdjMzAiLCJlbWFpbCI6InJpZGVyQGdtYWlsLmNvbSIsInJvbGUiOiJSSURFUiIsImlhdCI6MTc1NDExOTkxOSwiZXhwIjoxNzU0MjA2MzE5fQ.Fkg-dn2de7kKyasYYQ_zb8S-0XQxHquYsVrEjU1XTkI",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://assigment-b5-a5-munna.vercel.app/api/v1/rides/688dde192d8deb130632d24c/cancel",
+									"protocol": "https",
+									"host": [
+										"assigment-b5-a5-munna",
+										"vercel",
+										"app"
+									],
+									"path": [
+										"api",
+										"v1",
+										"rides",
+										"688dde192d8deb130632d24c",
+										"cancel"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "MY-RIDES",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhkYmVhOWJhYTM4MTJhZGZkMDdjMzAiLCJlbWFpbCI6InJpZGVyQGdtYWlsLmNvbSIsInJvbGUiOiJSSURFUiIsImlhdCI6MTc1NDExOTkxOSwiZXhwIjoxNzU0MjA2MzE5fQ.Fkg-dn2de7kKyasYYQ_zb8S-0XQxHquYsVrEjU1XTkI",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://assigment-b5-a5-munna.vercel.app/api/v1/rides/me",
+									"protocol": "https",
+									"host": [
+										"assigment-b5-a5-munna",
+										"vercel",
+										"app"
+									],
+									"path": [
+										"api",
+										"v1",
+										"rides",
+										"me"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "UPDATE-STATUS",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhkYmViYmJhYTM4MTJhZGZkMDdjMzQiLCJlbWFpbCI6ImRyaXZlckBnbWFpbC5jb20iLCJyb2xlIjoiRFJJVkVSIiwiaWF0IjoxNzU0MTI2NDE4LCJleHAiOjE3NTQyMTI4MTh9.O8F68kcHdM9Y2HiXSh6Ee7YO1eMbZ8A3oJBKwNidGEA",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"status\": \"COMPLETED\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/v1/rides/688ddd3d2d8deb130632d246/status",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"v1",
+										"rides",
+										"688ddd3d2d8deb130632d246",
+										"status"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "DRIVER-WORKS",
+					"item": [
+						{
+							"name": "DRIVER-EARNINGS",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhkZWFiMDJkMjY5M2ZhNmE1ZTBhMGQiLCJlbWFpbCI6ImRyaXZlckBnbWFpbC5jb20iLCJyb2xlIjoiRFJJVkVSIiwiaWF0IjoxNzU0MTMxMjY3LCJleHAiOjE3NTQyMTc2Njd9.Hl8hZFNsjJE-Sh126yBEFUT0hZFkZ5E2wTsEYZATEMc",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:5000/api/v1/rides/earnings/me?au",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"v1",
+										"rides",
+										"earnings",
+										"me"
+									],
+									"query": [
+										{
+											"key": "au",
+											"value": null
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "AVAILABLE-RIDES",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhkN2Q2Yzk2NWQ2NzRkMDIxMmM2OGUiLCJlbWFpbCI6ImRyaXZlckBnbWFpbC5jb20iLCJyb2xlIjoiRFJJVkVSIiwiaWF0IjoxNzU0MTA2OTk4LCJleHAiOjE3NTQxOTMzOTh9.V19HNZv5iLhaex4l20UEL4uoohv7QMkKWEOfr5UenzY",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:5000/api/v1/rides/available",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"v1",
+										"rides",
+										"available"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DRIVER-ACCEPT-RIDE",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhkZWFiMDJkMjY5M2ZhNmE1ZTBhMGQiLCJlbWFpbCI6ImRyaXZlckBnbWFpbC5jb20iLCJyb2xlIjoiRFJJVkVSIiwiaWF0IjoxNzU0MTMxMjY3LCJleHAiOjE3NTQyMTc2Njd9.Hl8hZFNsjJE-Sh126yBEFUT0hZFkZ5E2wTsEYZATEMc",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \" rideStatus\":\"ACCEPTED\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/v1/rides/688dec332d2693fa6a5e0a3c/accept",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"v1",
+										"rides",
+										"688dec332d2693fa6a5e0a3c",
+										"accept"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DRIVER-REJECT-RIDE",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/v1/rides/688c95338bce674a955023f5/reject",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"v1",
+										"rides",
+										"688c95338bce674a955023f5",
+										"reject"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DRIVER-PICKUP-RIDE",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhkZWFiMDJkMjY5M2ZhNmE1ZTBhMGQiLCJlbWFpbCI6ImRyaXZlckBnbWFpbC5jb20iLCJyb2xlIjoiRFJJVkVSIiwiaWF0IjoxNzU0MTMxMjY3LCJleHAiOjE3NTQyMTc2Njd9.Hl8hZFNsjJE-Sh126yBEFUT0hZFkZ5E2wTsEYZATEMc",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "\r\n\r\n {\r\n    \" rideStatus\": \"PICKED_UP\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/v1/rides/688dec332d2693fa6a5e0a3c/pickup",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"v1",
+										"rides",
+										"688dec332d2693fa6a5e0a3c",
+										"pickup"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DRIVER-FEEDBACK-RATINGS",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhkN2Q2Yzk2NWQ2NzRkMDIxMmM2OGUiLCJlbWFpbCI6ImRyaXZlckBnbWFpbC5jb20iLCJyb2xlIjoiRFJJVkVSIiwiaWF0IjoxNzU0MTA2OTk4LCJleHAiOjE3NTQxOTMzOTh9.V19HNZv5iLhaex4l20UEL4uoohv7QMkKWEOfr5UenzY",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:5000/api/v1/rides/688d8af9eaede91d1c936174/driver-ratings",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"v1",
+										"rides",
+										"688d8af9eaede91d1c936174",
+										"driver-ratings"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "DRIVER-TRANSITE-RIDE",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhkZWFiMDJkMjY5M2ZhNmE1ZTBhMGQiLCJlbWFpbCI6ImRyaXZlckBnbWFpbC5jb20iLCJyb2xlIjoiRFJJVkVSIiwiaWF0IjoxNzU0MTMxMjY3LCJleHAiOjE3NTQyMTc2Njd9.Hl8hZFNsjJE-Sh126yBEFUT0hZFkZ5E2wTsEYZATEMc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n {\r\n    \" rideStatus\": \"IN_TRANSIT\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/v1/rides/688dec332d2693fa6a5e0a3c/transit",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"v1",
+								"rides",
+								"688dec332d2693fa6a5e0a3c",
+								"transit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DRIVER-COMPLETE-RIDE",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhkZWFiMDJkMjY5M2ZhNmE1ZTBhMGQiLCJlbWFpbCI6ImRyaXZlckBnbWFpbC5jb20iLCJyb2xlIjoiRFJJVkVSIiwiaWF0IjoxNzU0MTMxMjY3LCJleHAiOjE3NTQyMTc2Njd9.Hl8hZFNsjJE-Sh126yBEFUT0hZFkZ5E2wTsEYZATEMc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n {\r\n    \"rideStatus\": \"COMPLETED\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/v1/rides/688dec332d2693fa6a5e0a3c/complete",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"v1",
+								"rides",
+								"688dec332d2693fa6a5e0a3c",
+								"complete"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// {\r\n//     \"email\": \"super@gmail.com\",\r\n//     \"password\": \"12345678\"\r\n// }\r\n\r\n// {\r\n//   \"email\" : \"masud@gmail.com\",\r\n    \r\n//     \"password\" : \"Munna1234@\"\r\n// }\r\n\r\n\r\n{\r\n   \"email\" : \"driver@gmail.com\",\r\n     \"password\" : \"Munna1234@\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://assigment-b5-a5-munna.vercel.app/api/v1/auth/login",
+							"protocol": "https",
+							"host": [
+								"assigment-b5-a5-munna",
+								"vercel",
+								"app"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "refresh-token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\" : \"driver@gmail.com\",\r\n    \"password\" : \"Munna1234@\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/v1/auth/refresh-token",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"refresh-token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n \r\n    \"email\": \"super@gmail.com\",\r\n    \"password\": \"12345678\"\r\n}\r\n\r\n"
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/v1/auth/logout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "change-password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODg1YjhhZTFlMzExYWU2MmZiMzlhODEiLCJlbWFpbCI6Im1hbm5hbmJkMzU3QGdtYWlsLmNvbSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzUzNTk2NTY0LCJleHAiOjE3NTM1OTcxNjR9.HLFmpfOoTTV0_2UVh_m3PQrmTjTwWHQiMv8ZWOhOQqI",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n \r\n \"id\":\"6885b8ae1e311ae62fb39a81\",\r\n\"newPassword\": \"Munna12345@\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/v1/auth/reset-password",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"reset-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "forgot password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\":\"mannanbd357@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/v1/auth/forgot-password",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"forgot-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "set-password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/v1/auth/set-password",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"set-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "reset-password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/v1/auth/reset-password",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"reset-password"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "ADMIN-WORKS",
+					"item": [
+						{
+							"name": "ADMIN-GET-ALL-USERS",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhkN2NlOTk2NWQ2NzRkMDIxMmM2OGEiLCJlbWFpbCI6InN1cGVyQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc1NDEwMzU1NSwiZXhwIjoxNzU0MTg5OTU1fQ.7EiJWI7YOM_4oyYTuKw710r2u6Nq7ZizDcf5h2ivAU0",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://assigment-b5-a5-munna.vercel.app/api/v1/users/all-users",
+									"protocol": "https",
+									"host": [
+										"assigment-b5-a5-munna",
+										"vercel",
+										"app"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"all-users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "ADMIN-GET-SINGLE-USER",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhkN2NlOTk2NWQ2NzRkMDIxMmM2OGEiLCJlbWFpbCI6InN1cGVyQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc1NDEwMzU1NSwiZXhwIjoxNzU0MTg5OTU1fQ.7EiJWI7YOM_4oyYTuKw710r2u6Nq7ZizDcf5h2ivAU0",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "\r\n\r\n"
+								},
+								"url": {
+									"raw": "https://assigment-b5-a5-munna.vercel.app/api/v1/users/688d7d81965d674d0212c692",
+									"protocol": "https",
+									"host": [
+										"assigment-b5-a5-munna",
+										"vercel",
+										"app"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"688d7d81965d674d0212c692"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "BLOCK-UNBLOCK-STATUS",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhkN2NlOTk2NWQ2NzRkMDIxMmM2OGEiLCJlbWFpbCI6InN1cGVyQGdtYWlsLmNvbSIsInJvbGUiOiJBRE1JTiIsImlhdCI6MTc1NDEwMzU1NSwiZXhwIjoxNzU0MTg5OTU1fQ.7EiJWI7YOM_4oyYTuKw710r2u6Nq7ZizDcf5h2ivAU0",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"status\":\"UNBLOCKED\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://assigment-b5-a5-munna.vercel.app/api/v1/users/block/688d7d81965d674d0212c692",
+									"protocol": "https",
+									"host": [
+										"assigment-b5-a5-munna",
+										"vercel",
+										"app"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"block",
+										"688d7d81965d674d0212c692"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "USER-WORKS",
+					"item": [
+						{
+							"name": "CREATE-USER",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "// {\r\n//     \"name\" : \"Munna\",\r\n//     \"phone\" : \"+8801911479054\",\r\n//     \"email\" : \"sha@gmail.com\",\r\n//     \"address\" : \"Dhaka\",\r\n//     \"isDeleted\" :  \"mmah\",\r\n//     \"isActive\": \"Ore Mama\",\r\n//     \"password\" : \"Munna1234@\"\r\n// }\r\n{\r\n    \"name\" : \"driver\",\r\n    \"phone\" : \"+8801911479054\",\r\n    \"email\" : \"driver@gmail.com\",\r\n    \r\n    \"password\" : \"Munna1234@\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://assigment-b5-a5-munna.vercel.app/api/v1/users/register",
+									"protocol": "https",
+									"host": [
+										"assigment-b5-a5-munna",
+										"vercel",
+										"app"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "UPDATE-USER",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhkYjYxZTYwOGUzZDM2ODZhODA1MTUiLCJlbWFpbCI6Im1hc3VkQGdtYWlsLmNvbSIsInJvbGUiOiJSSURFUiIsImlhdCI6MTc1NDExNzc2MSwiZXhwIjoxNzU0MjA0MTYxfQ.lFOER2ZSpEQTlckt1cE2tp-stxrhk3-whimTlU_yRtw",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n     \"phone\": \"+8801867418698\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://assigment-b5-a5-munna.vercel.app/api/v1/users/688db61e608e3d3686a80515",
+									"protocol": "https",
+									"host": [
+										"assigment-b5-a5-munna",
+										"vercel",
+										"app"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"688db61e608e3d3686a80515"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET-ME",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhkN2Q4MTk2NWQ2NzRkMDIxMmM2OTIiLCJlbWFpbCI6InJpZGVyQGdtYWlsLmNvbSIsInJvbGUiOiJSSURFUiIsImlhdCI6MTc1NDEwMzUwOCwiZXhwIjoxNzU0MTg5OTA4fQ.YEk5XidFWkKay3oAjRLI-D8rlhH31crmZHBiN6QtxqI",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://assigment-b5-a5-munna.vercel.app/api/v1/users/me",
+									"protocol": "https",
+									"host": [
+										"assigment-b5-a5-munna",
+										"vercel",
+										"app"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"me"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}

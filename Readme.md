@@ -1,13 +1,32 @@
-# 🚖 Ride Booking API  
+#  Ride Booking API  
 A secure, scalable backend for a ride-hailing platform (like Uber/Pathao) built with **Node.js**, **Express**, and **TypeScript**. It supports **role-based authentication**, **real-time ride management**, **driver earnings**, and **feedback system**.
 
----
+
+## Check My Postman Collection Folder For The Api json file drag and drop it in postman to get all my test api. 
+
+##  Project Overview
+
+This is a **complete backend API** for a **Ride-Sharing Platform**, designed to manage **Riders**, **Drivers**, and **Admins** with a secure and scalable architecture.
+
+### Core Highlights
+- **Built with:** TypeScript, Express.js, MongoDB (Mongoose)
+- **Security:** JWT Authentication, Role-Based Access Control (RBAC)
+- **Validation:** Zod for schema validation
+- **Authentication:** Passport.js for strategy-based login
+- **Password Protection:** bcrypt for hashing
+- **Geo Location:** GeoJSON + Haversine formula for nearby driver matching
+- **File Uploads:** Multer for driver documents
+- **Email Service:** Nodemailer for notifications
+
+### 🚀 What It Offers
+- Complete **ride lifecycle** → Request → Accept → Pickup → Complete
+- **Driver Features:** Availability status, earnings tracking
+- **Admin Control:** User and ride management
+- **Postman Tested & Documented**
 
 
 
----
-
-## ✅ Features  
+##  Features  
 ✔ Role-based Authentication (**RIDER**, **DRIVER**, **ADMIN**)  
 ✔ Google OAuth & JWT authentication  
 ✔ Riders can **request**, **cancel**, and **track rides**  
@@ -32,70 +51,145 @@ A secure, scalable backend for a ride-hailing platform (like Uber/Pathao) built 
 
 
 Project Structure
-src/
-├── modules/
-│   ├── auth/          # Login, Register, JWT logic
-│   ├── user/          # Common user logic
-│   ├── driver/        # Driver-specific features
-│   ├── ride/          # Ride request & management
-├── middlewares/       # Authentication & Role Guards
-├── config/            # Environment & DB config
-├── utils/             # Helpers (validators, constants)
-├── app.ts             # Entry point
 
 
+```
+├─ .gitignore
+├─ Readme.md
+├─ eslint.config.mjs
+├─ package-lock.json
+├─ package.json
+├─ src
+│  ├─ app.ts
+│  ├─ app
+│  │  ├─ config
+│  │  │  ├─ cloudinary.config.ts
+│  │  │  ├─ env.ts
+│  │  │  ├─ multer.config.ts
+│  │  │  ├─ passport.ts
+│  │  │  └─ redis.config.ts
+│  │  ├─ constants.ts
+│  │  ├─ errorHelpers
+│  │  │  └─ AppError.ts
+│  │  ├─ helpers
+│  │  │  ├─ handleCastError.ts
+│  │  │  ├─ handleDuplicateError.ts
+│  │  │  ├─ handleValidationError.ts
+│  │  │  └─ handleZodError.ts
+│  │  ├─ interfaces
+│  │  │  ├─ error.types.ts
+│  │  │  └─ index.d.ts
+│  │  ├─ middlewares
+│  │  │  ├─ checkAuth.ts
+│  │  │  ├─ globalErrorHandler.ts
+│  │  │  ├─ notFound.ts
+│  │  │  └─ validateRequest.ts
+│  │  ├─ modules
+│  │  │  ├─ auth
+│  │  │  │  ├─ auth.controller.ts
+│  │  │  │  ├─ auth.route.ts
+│  │  │  │  └─ auth.service.ts
+│  │  │  ├─ driver
+│  │  │  │  ├─ driver.controller.ts
+│  │  │  │  ├─ driver.interface.ts
+│  │  │  │  ├─ driver.model.ts
+│  │  │  │  ├─ driver.route.ts
+│  │  │  │  ├─ driver.service.ts
+│  │  │  │  └─ driver.validation.ts
+│  │  │  ├─ otp
+│  │  │  │  ├─ otp.controller.ts
+│  │  │  │  ├─ otp.route.ts
+│  │  │  │  └─ otp.service.ts
+│  │  │  ├─ ride
+│  │  │  │  ├─ ride.controller.ts
+│  │  │  │  ├─ ride.interface.ts
+│  │  │  │  ├─ ride.model.ts
+│  │  │  │  ├─ ride.route.ts
+│  │  │  │  ├─ ride.service.ts
+│  │  │  │  └─ ride.validation.ts
+│  │  │  ├─ stats
+│  │  │  │  ├─ stats.controller.ts
+│  │  │  │  ├─ stats.route.ts
+│  │  │  │  └─ stats.service.ts
+│  │  │  └─ user
+│  │  │     ├─ user.constant.ts
+│  │  │     ├─ user.controller.ts
+│  │  │     ├─ user.interface.ts
+│  │  │     ├─ user.model.ts
+│  │  │     ├─ user.route.ts
+│  │  │     ├─ user.service.ts
+│  │  │     └─ user.validation.ts
+│  │  ├─ routes
+│  │  │  └─ index.ts
+│  │  └─ utils
+│  │     ├─ QueryBuilder.ts
+│  │     ├─ catchAsync.ts
+│  │     ├─ haversine.ts
+│  │     ├─ jwt.ts
+│  │     ├─ seedSuperAdmin.ts
+│  │     ├─ sendEmail.ts
+│  │     ├─ sendResponse.ts
+│  │     ├─ setCookie.ts
+│  │     ├─ templates
+│  │     │  ├─ forgetPassword.ejs
+│  │     │  └─ otp.ejs
+│  │     └─ userToken.ts
+│  └─ server.ts
+├─ tsconfig.json
+└─ vercel.json
+```
 
 ---
 
-## ⚙️ Installation & Setup
+##  Installation & Setup
 
-### ✅ Prerequisites
+###  Prerequisites
 - Node.js (v16+)
 - MongoDB (local or cloud)
 - npm or yarn
 
-### ✅ Steps
+###  Steps
 ```bash
 # Clone the repository
 git clone https://github.com/md-munna-khan/B5A5-BACKEND
 cd ride-booking-api
 ```
-# Install dependencies
+### Install dependencies
 ```
 npm install
 ```
-# Create environment file
+### Create environment file
 cp .env.example .env
 
-# Configure environment variables in .env
+### Configure environment variables in .env
 PORT=5000
 MONGO_URI=mongodb://localhost:27017/ride-booking
 JWT_SECRET=your_secret_key
 JWT_EXPIRES_IN=1d
 
-✅ Environment Variables (.env.example)
+ Environment Variables (.env.example)
 Create a .env file in the project root and add the following variables:
-# Server
+###Server
 PORT=5000
 NODE_ENV=development
 
-# Database
+### Database
 MONGO_URI=mongodb://localhost:27017/ride-booking
 
-# JWT Config
+### JWT Config
 JWT_SECRET=your_jwt_secret_key
 JWT_EXPIRES_IN=1d
 
-# Refresh Token Config
+### Refresh Token Config
 REFRESH_TOKEN_SECRET=your_refresh_token_secret
 REFRESH_TOKEN_EXPIRES_IN=7d
 
-# Google OAuth (if using social login)
+### Google OAuth (if using social login)
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
 GOOGLE_CALLBACK_URL=http://localhost:5000/auth/google/callback
 
-# Cloudinary (for file uploads)
+### Cloudinary (for file uploads)
 CLOUDINARY_CLOUD_NAME=your_cloudinary_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
@@ -114,10 +208,10 @@ npm start
 https://assigment-b5-a5-munna.vercel.app
 
 
-## 🧪 API Testing & Documentation
+##  API Testing & Documentation
 
 Test all endpoints easily using Postman.  
-👉 [View Postman Collection](https://www.postman.com/your-link)
+ [View Postman Collection](https://www.postman.com/your-link)
 
 [text](<c:/Users/user/Downloads/Programs/B5-A5 Ride Mangement.postman_collection.json>)
 ## 🛠 API Endpoints

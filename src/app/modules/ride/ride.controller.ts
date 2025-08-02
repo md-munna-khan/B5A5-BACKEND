@@ -224,7 +224,7 @@ const giveRiderFeedback = catchAsync(
   });
 });
 
-export const updateRideStatus = catchAsync(async (req: Request, res: Response) => {
+ const updateRideStatus = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const { status } = req.body;
 
