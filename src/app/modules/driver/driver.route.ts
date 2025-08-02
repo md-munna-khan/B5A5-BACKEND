@@ -20,14 +20,14 @@ router.post(
 
 // Admin approves a driver application
 router.patch(
-  "/:id/approve",
+  "/approve/:id",
   checkAuth(Role.ADMIN),
   DriverControllers.approveDriver
 );
 
 
 // Suspend driver
-router.patch('/:id/suspend', checkAuth(Role.ADMIN), DriverControllers.suspendDriver);
+router.patch('/suspend/:id', checkAuth(Role.ADMIN), DriverControllers.suspendDriver);
 
 // Get all drivers (admin, super admin)
 router.get(
@@ -62,7 +62,7 @@ router.delete(
 
 // Update online status (driver only)
 router.patch(
-  "/:id/online-status",
+  "/online-status/:id",
   checkAuth(Role.DRIVER),
   DriverControllers.updateOnlineStatus
 );
@@ -76,7 +76,7 @@ router.patch(
 
 // Update driver's current location (driver only)
 router.patch(
-  "/:id/location",
+  "/location/:id",
   checkAuth(Role.DRIVER),
 
   DriverControllers.updateLocation

@@ -172,7 +172,7 @@ export const DriverControllers = {
   updateDriver,
   deleteDriver,
   getDriverByUserId,
-    updateOnlineStatus,
+  updateOnlineStatus,
   updateRidingStatus,
   updateLocation,
 };

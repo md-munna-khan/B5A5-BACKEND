@@ -3,9 +3,22 @@ import { Role } from "../user/user.interface";
 import { checkAuth } from "../../middlewares/checkAuth";
 import { validateRequest } from "../../middlewares/validateRequest";
 import { RideControllers } from "./ride.controller";
-import { createRideZodSchema,  } from "./ride.validation";
+import { createRideZodSchema, updateRideZodSchema,  } from "./ride.validation";
 
 const router = Router();
+// Driver views their rides
+router.get(
+  "/driver",
+  checkAuth(Role.DRIVER),
+  RideControllers.getDriverRides
+);
+
+// Admin gets all rides
+router.get(
+  "/",
+  checkAuth(Role.ADMIN),
+  RideControllers.getAllRides
+);
 
 // Rider creates a ride request
 router.post(
@@ -15,12 +28,12 @@ router.post(
   RideControllers.requestRide
 );
 
-// Rider cancels a ride request   
 router.patch(
-  "/:id/cancel",
-  checkAuth(Role.RIDER),
-  RideControllers.cancelRide
+  "/:id/status",
+  validateRequest(updateRideZodSchema),
+  RideControllers.updateRideStatus
 );
+
 
 // Rider views their rides
 router.get(
@@ -41,6 +54,23 @@ router.get(
   checkAuth(Role.DRIVER),
   RideControllers.getAvailableRides
 );
+// driver feedback
+router.post("/:rideId/driver-feedback", 
+  checkAuth(Role.DRIVER),
+  RideControllers.giveDriverFeedback);
+// rider feedback
+router.put(
+  "/:id/feedback",
+  checkAuth(Role.RIDER),  
+  RideControllers.giveRiderFeedback
+);
+// Rider cancels a ride request   
+router.patch(
+  "/:id/cancel",
+  checkAuth(Role.RIDER),
+  RideControllers.cancelRide
+);
+
 
 // Driver accepts a ride
 router.patch(
@@ -49,6 +79,7 @@ router.patch(
   RideControllers.acceptRide
 );
 
+// driver reject
 router.patch(
   "/:id/reject",
   checkAuth(Role.DRIVER),
@@ -77,19 +108,7 @@ router.patch(
   RideControllers.completeRide
 );
 
-// Driver views their rides
-router.get(
-  "/driver",
-  checkAuth(Role.DRIVER),
-  RideControllers.getDriverRides
-);
 
-// Admin gets all rides
-router.get(
-  "/",
-  checkAuth(Role.ADMIN),
-  RideControllers.getAllRides
-);
 
 // router.patch("/:id/location",checkAuth(Role.DRIVER),
 //  RideControllers.getAllRides

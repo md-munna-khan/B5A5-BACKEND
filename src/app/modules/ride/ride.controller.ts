@@ -5,6 +5,7 @@ import { RideService } from "./ride.service";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import { JwtPayload } from "jsonwebtoken";
+import { IDriverFeedback, IRiderFeedback } from "./ride.interface";
 
 // const requestRide = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 //   const rider = req.user as JwtPayload;
@@ -186,7 +187,55 @@ const getDriverEarnings = catchAsync(
     });
   }
 );
+const giveRiderFeedback = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const rider = req.user as JwtPayload;
+    const riderId = rider.userId;
+    const rideId = req.params.id;
 
+   
+    const feedbackInput: IRiderFeedback = req.body;
+
+    const result = await RideService.giveRiderFeedback(riderId, rideId, feedbackInput);
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Feedback and rating submitted successfully",
+      data: result,
+    });
+  }
+);
+
+ const giveDriverFeedback = catchAsync(async (req: Request, res: Response) => {
+
+   const driver = req.user as JwtPayload;
+  const rideId = req.params.rideId;
+  const driverId = driver.userId; 
+  const feedback: IDriverFeedback = req.body;
+
+  const updatedRide = await RideService.submitDriverFeedback(rideId, driverId, feedback);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Driver feedback submitted successfully",
+    data: updatedRide,
+  });
+});
+
+export const updateRideStatus = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  const updatedRide = await RideService.updateRideStatus(id, status);
+
+  res.status(httpStatus.OK).json({
+    success: true,
+    message: "Ride status updated successfully",
+    data: updatedRide,
+  });
+});
 
 export const RideControllers = {
   getDriverEarnings,
@@ -201,4 +250,7 @@ export const RideControllers = {
   completeRide,
   getDriverRides,
   getAllRides,
+  giveRiderFeedback,
+  giveDriverFeedback,
+  updateRideStatus
 };

@@ -67,10 +67,25 @@ const getMe = catchAsync(async (req: Request, res: Response, next: NextFunction)
         data: result.data
     })
 })
+// block logic
+const updateUserStatus = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  const updatedUser = await userServices.updateUserStatus(id, status);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: `User status updated to ${status}`,
+    data: updatedUser,
+  });
+});
 export const userControllers = {
     createUser,
     getAllUsers,
     updateUser,
     getMe,
-    getSingleUser
+    getSingleUser,
+    updateUserStatus
 }

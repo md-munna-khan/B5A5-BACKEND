@@ -5,7 +5,12 @@ import httpStatus from "http-status-codes";
 import { RideModel } from "./ride.model";
 import AppError from "../../errorHelpers/AppError";
 import { Driver } from "../driver/driver.model";
-import { IRide } from "./ride.interface";
+import {
+  IDriverFeedback,
+  IRide,
+  IRiderFeedback,
+  RideStatus,
+} from "./ride.interface";
 import { Types } from "mongoose";
 import { haversineDistance } from "../../utils/haversine";
 
@@ -225,7 +230,6 @@ const cancelRide = async (driverId: string, rideId: string) => {
 //   return ride;
 // };
 
-
 // Rider views own rides
 const getRiderRides = async (riderId: string) => {
   const rides = await RideModel.find({ riderId })
@@ -273,7 +277,7 @@ const acceptRide = async (driverId: string, rideId: string) => {
   driverDoc.isOnRide = true;
   driverDoc.ridingStatus = "waiting_for_pickup";
   await driverDoc.save();
-  
+
   return ride;
 };
 
@@ -281,14 +285,15 @@ const rejectRide = async (rideId: string, driverId: string) => {
   const ride = await RideModel.findById(rideId);
 
   if (!ride) {
-    throw new  AppError(httpStatus.NOT_FOUND, "Ride not found");
+    throw new AppError(httpStatus.NOT_FOUND, "Ride not found");
   }
 
   if (ride.driverId?.toString() !== driverId) {
-    throw new AppError(httpStatus.FORBIDDEN, "You are not assigned to this ride");
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      "You are not assigned to this ride"
+    );
   }
-
- 
 
   ride.rideStatus = "Rejected";
   await ride.save();
@@ -393,7 +398,113 @@ const getDriverEarnings = async (driverId: string) => {
 
   return { totalEarnings, rideCount: rides.length, rides };
 };
+const giveRiderFeedback = async (
+  riderId: string,
+  rideId: string,
+  feedbackInput: IRiderFeedback
+) => {
+  const ride = await RideModel.findById(rideId);
 
+  if (!ride) {
+    throw new AppError(httpStatus.NOT_FOUND, "Ride not found");
+  }
+
+  // Check if the rider owns this ride
+  if (!ride.riderId.equals(new Types.ObjectId(riderId))) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      "You can only give feedback on your own rides"
+    );
+  }
+
+  // Only allow feedback if ride is COMPLETED
+  if (ride.rideStatus !== "COMPLETED") {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Feedback allowed only after ride is completed"
+    );
+  }
+
+  // Save feedback
+  ride.riderFeedback = {
+    rating: feedbackInput.rating,
+    feedback: feedbackInput.feedback || "",
+  };
+
+  await ride.save();
+
+  return ride;
+};
+
+const submitDriverFeedback = async (
+  rideId: string,
+  driverId: string,
+  feedback: IDriverFeedback
+) => {
+  const ride = await RideModel.findById(rideId);
+
+  if (!ride) {
+    throw new AppError(httpStatus.NOT_FOUND, "Ride not found");
+  }
+
+  if (!ride.driverId || ride.driverId.toString() !== driverId) {
+    throw new AppError(httpStatus.FORBIDDEN, "Not authorized to give feedback");
+  }
+
+  if (ride.rideStatus !== "COMPLETED") {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Feedback allowed only after ride completion"
+    );
+  }
+
+  if (ride.riderFeedback) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Feedback already submitted");
+  }
+
+  ride.riderFeedback = {
+    rating: feedback.rating,
+    feedback: feedback.feedback,
+  };
+
+  await ride.save();
+  return ride;
+};
+
+const updateRideStatus = async (id: string, status: RideStatus) => {
+  const ride = await RideModel.findById(id);
+
+  if (!ride) {
+    throw new AppError(httpStatus.NOT_FOUND, "Ride not found");
+  }
+
+  ride.rideStatus = status;
+
+  // Optionally update timestamps
+  if (status === "ACCEPTED") {
+    ride.timestamps.acceptedAt = new Date();
+  }
+
+  if (status === "COMPLETED") {
+    ride.timestamps.completedAt = new Date();
+
+    // ✅ Driver status update here
+    if (ride.driverId) {
+      // Update ridingStatus to "idle"
+      await Driver.findOneAndUpdate(
+        { userId: ride.driverId },
+        {
+          ridingStatus: "idle",
+          isOnRide: false,
+        }
+      );
+    }
+  }
+
+  await ride.save();
+
+  return ride;
+};
 
 export const RideService = {
   getDriverEarnings,
@@ -408,4 +519,7 @@ export const RideService = {
   completeRide,
   getDriverRides,
   getAllRides,
+  giveRiderFeedback,
+  submitDriverFeedback,
+  updateRideStatus,
 };

@@ -21,16 +21,16 @@ export interface IUser {
  
   name: string;
   email: string;
-  password: string; // Will be hashed with bcryptjs
+  password?: string; // Will be hashed with bcryptjs
   role: Role; // Default: RIDER
   isVerified?: boolean; // Default: false
-  location: {
+  location?: {
     lat: number;
     lng: number;
     address?: string;
   };
-  isDeleted:boolean,
-  picture:string,
+  isDeleted?:boolean,
+  picture?:string,
   auths?: IAuthProvider[];
   phone?: string;
   status?: UserStatus; // Default: UNBLOCKED

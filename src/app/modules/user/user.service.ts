@@ -1,5 +1,5 @@
 import AppError from "../../errorHelpers/AppError";
-import { IAuthProvider, IUser, Role } from "./user.interface";
+import { IAuthProvider, IUser, Role, UserStatus } from "./user.interface";
 import { User } from "./user.model";
 import httpStatus from 'http-status-codes';
 import bcryptjs from "bcryptjs";
@@ -69,9 +69,9 @@ const updateUser = async (userId: string, payload: Partial<IUser>, decodedToken:
     }
 
     // new
-    if (decodedToken.role === Role.ADMIN && ifUserExist.role === Role.SUPER_ADMIN) {
-        throw new AppError(httpStatus.FORBIDDEN, "You are not authorized to update a super admin profile");
-    }
+    // if (decodedToken.role === Role.ADMIN && ifUserExist.role === Role.SUPER_ADMIN) {
+    //     throw new AppError(httpStatus.FORBIDDEN, "You are not authorized to update a super admin profile");
+    // }
 
 
     if (payload.role) {
@@ -80,7 +80,7 @@ const updateUser = async (userId: string, payload: Partial<IUser>, decodedToken:
         }
     }
 
-    if (payload.isActive || payload.isDeleted || payload.isVerified) {
+    if (payload.status || payload.isDeleted || payload.isVerified) {
         if (decodedToken.role === Role.RIDER || decodedToken.role === Role.DRIVER) {
             throw new AppError(httpStatus.FORBIDDEN, "You are not authorized");
         }
@@ -105,10 +105,25 @@ const getMe = async (userId: string) => {
     }
 };
 
+const updateUserStatus = async (userId: string, status: UserStatus) => {
+  if (!Object.values(UserStatus).includes(status)) {
+    throw new  AppError(httpStatus.BAD_REQUEST, "Invalid user status value");
+  }
+
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new  AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  user.status = status;
+  await user.save();
+  return user;
+};
 export const userServices = {
     createUser,
     getAllUsers,
     updateUser,
     getSingleUser,
-    getMe
+    getMe,
+    updateUserStatus
 }

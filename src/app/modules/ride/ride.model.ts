@@ -32,6 +32,14 @@ const rideSchema = new Schema<IRide>(
       enum: ["REQUESTED", "ACCEPTED", "COMPLETED", "CANCELLED","IN_TRANSIT","PICKED_UP","Rejected"],
       default: "REQUESTED",
     },
+       riderFeedback: {
+      rating: { type: Number, min: 1, max: 5 },
+      feedback: { type: String, maxlength: 500 },
+    },
+  driverFeedback: {
+  rating: { type: Number, min: 1, max: 5 },
+  feedback: { type: String, maxlength: 500 },
+},
     rejectedDrivers: [{ type: Schema.Types.ObjectId, ref: "User" }],
     fare: { type: Number },
     timestamps: {
@@ -40,6 +48,7 @@ const rideSchema = new Schema<IRide>(
       completedAt: { type: Date },
     },
   },
+  
   {
     timestamps: true,
   }
