@@ -23,7 +23,7 @@ export const connectRedis = async () => {
     //  we have not used try catch because already redis handled the error by using redisClient.on('error', err => console.log('Redis Client Error', err));
     if (!redisClient.isOpen) { // used this because if once connected there is no need to connect redis again 
         await redisClient.connect();
-        console.log("Redis Connected !")
+        
     }
 
     // await redisClient.set('foo', 'bar');

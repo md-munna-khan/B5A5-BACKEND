@@ -33,7 +33,7 @@ const changePassword = async (oldPassword: string, newPassword: string, decodedT
 
     user!.password = await bcryptjs.hash(newPassword, Number(envVars.BCRYPT_SALT_ROUND))
 
-    user!.save();
+   user!.save();
 
 }
 

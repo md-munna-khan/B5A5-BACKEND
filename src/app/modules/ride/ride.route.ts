@@ -14,10 +14,18 @@ router.get(
 );
 
 // Admin gets all rides
+// router.get(
+//   "/",
+//   checkAuth(Role.DRIVER),
+//   RideControllers.getRequestedRides
+// );
+// Admin routes
+router.get("/all", checkAuth(Role.ADMIN), RideControllers.getAllRides);
+
 router.get(
-  "/",
-  checkAuth(Role.ADMIN),
-  RideControllers.getAllRides
+ "/requested",
+  checkAuth(Role.DRIVER),
+  RideControllers.getRequestedRides
 );
 
 // Rider creates a ride request
@@ -27,6 +35,8 @@ router.post(
   validateRequest(createRideZodSchema),
   RideControllers.requestRide
 );
+router.get("/active", checkAuth(Role.DRIVER), RideControllers.getActiveRides);
+
 
 router.patch(
   "/:id/status",
@@ -34,8 +44,10 @@ router.patch(
   validateRequest(updateRideZodSchema),
   RideControllers.updateRideStatus
 );
-
-
+// admin oversight
+router.get("/oversight", 
+  checkAuth(Role.ADMIN), 
+  RideControllers.getRidesOversight)
 // Rider views their rides
 router.get(
   "/me",
@@ -55,6 +67,11 @@ router.get(
   checkAuth(Role.DRIVER),
   RideControllers.getAvailableRides
 );
+// ride details
+router.get("/:id", 
+  checkAuth(Role.RIDER, Role.DRIVER, Role.ADMIN),
+  RideControllers.getRideById);
+
 // driver feedback
 router.post("/:rideId/driver-ratings", 
   checkAuth(Role.DRIVER),
@@ -68,7 +85,7 @@ router.put(
 // Rider cancels a ride request   
 router.patch(
   "/:id/cancel",
-  checkAuth(Role.RIDER),
+  checkAuth(Role.RIDER,Role.DRIVER),
   RideControllers.cancelRide
 );
 
@@ -108,6 +125,7 @@ router.patch(
   checkAuth(Role.DRIVER),
   RideControllers.completeRide
 );
+
 
 
 

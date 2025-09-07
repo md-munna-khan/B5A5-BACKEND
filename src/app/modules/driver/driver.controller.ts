@@ -9,16 +9,31 @@ import { sendResponse } from "../../utils/sendResponse";
 import { JwtPayload } from "jsonwebtoken";
 import { catchAsync } from "../../utils/catchAsync";
 import { DriverService } from "./driver.service";
+import { IDriver } from "./driver.interface";
+
 
 
 // Apply as Driver (for RIDERs)
 const applyAsDriver = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const user = req.user as JwtPayload;
 
-  const payload =  {
-    ...req.body,
-    drivingLicense: req.file?.path,
-  }
+  // const payload =  {
+  //   ...req.body,
+  //   drivingLicense: req.file?.path,
+  // }
+  const payload:IDriver = {
+ userId: user.userId,
+  vehicle: {
+    vehicleNumber: req.body.vehicle.vehicleNumber,
+    vehicleType: req.body.vehicle.vehicleType,
+  },
+  location: {
+    type: "Point",
+    coordinates: req.body.location.coordinates || [90.4125, 23.8103]
+  },
+  drivingLicense: req.file?.path,
+};
+
 
   console.log(payload)
 
@@ -47,8 +62,8 @@ const approveDriver = catchAsync(async (req: Request, res: Response, next: NextF
 });
 
 const suspendDriver = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const result = await DriverService.suspendDriver(id);
+  const driverId = req.params.id;
+  const result = await DriverService.suspendDriver(driverId);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -161,9 +176,42 @@ const updateLocation = catchAsync(async (req: Request, res: Response, next: Next
   });
 });
 
+const getMyProfile = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  const driver = req.user as JwtPayload;
+
+  // console.log(driver)
+
+  const result = await DriverService.getMyProfile(driver.userId);
+
+  // console.log(result)
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Driver profile retrieved successfully",
+    data: result,
+  });
+});
+
+const updateMyProfile = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  const driver = req.user as JwtPayload;
+  const result = await DriverService.updateMyProfile(driver.userId, req.body);
+console.log(result)
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Driver profile updated successfully",
+    data: result,
+  });
+});
+
+
+
 
 
 export const DriverControllers = {
+  getMyProfile,
+  updateMyProfile,
   applyAsDriver,
   approveDriver,
  suspendDriver,
@@ -175,4 +223,5 @@ export const DriverControllers = {
   updateOnlineStatus,
   updateRidingStatus,
   updateLocation,
+
 };

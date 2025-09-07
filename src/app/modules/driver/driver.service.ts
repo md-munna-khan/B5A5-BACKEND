@@ -7,10 +7,12 @@ import httpStatus from "http-status-codes";
 import { QueryBuilder } from "../../utils/QueryBuilder";
 import { IDriver } from "./driver.interface";
 import { User } from "../user/user.model";
+import { RideModel } from "../ride/ride.model";
 
 const applyAsDriver = async (user: any, payload: IDriver) => {
   // Check if user has already applied
   const existing = await Driver.findOne({ userId: user.userId });
+  console.log(existing)
   if (existing) {
     throw new AppError(httpStatus.BAD_REQUEST, "You have already applied as a driver");
   }
@@ -21,11 +23,14 @@ const applyAsDriver = async (user: any, payload: IDriver) => {
     status: "Pending", // initially pending
   };
 
-  // console.log(driverData)
+  console.log(driverData)
 
   const newDriver = await Driver.create(driverData);
   return newDriver;
 };
+
+
+
 
 const approveDriver = async (driverId: string) => {
   const driver = await Driver.findById(driverId);
@@ -42,8 +47,10 @@ const approveDriver = async (driverId: string) => {
   driver.status = "Approved";
   await driver.save();
 
-  // Update the user's role to 'driver'
-  await User.findByIdAndUpdate(driver.userId, { role: "DRIVER" });
+  // Update the user's role to 'DRIVER' if userId exists
+  if (driver.userId) {
+    await User.findByIdAndUpdate(driver.userId, { role: "DRIVER" });
+  }
 
   return driver;
 };
@@ -59,27 +66,19 @@ const suspendDriver = async (driverId: string) => {
     throw new AppError(httpStatus.BAD_REQUEST, "Driver is already suspended");
   }
 
-  // Update the driver status to 'Suspended'
+  // Update the driver status
   driver.status = "Suspended";
   await driver.save();
 
   // Optional: Downgrade user role to 'USER'
-  // await User.findByIdAndUpdate(driver.userId, { role: "USER" });
+  // if (driver.userId) {
+  //   await User.findByIdAndUpdate(driver.userId, { role: "USER" });
+  // }
 
   return driver;
 };
 
 
-
-// const createDriver = async (payload: Partial<IDriver>) => {
-//   const isDriverExist = await Driver.findOne({ userId: payload.userId });
-//   if (isDriverExist) {
-//     throw new AppError(httpStatus.BAD_REQUEST, "Driver already exists");
-//   }
-
-//   const driver = await Driver.create(payload);
-//   return driver;
-// };
 
 const getAllDrivers = async (query: Record<string, string>) => {
   const queryBuilder = new QueryBuilder(Driver.find(), query);
@@ -149,12 +148,36 @@ const updateRidingStatus = async (
 
   driver.ridingStatus = ridingStatus;
   await driver.save();
+
+  // ✅ Sync with current active ride
+  const activeRide = await RideModel.findOne({
+    driverId: driver._id,
+    rideStatus: { $in: ["ACCEPTED", "PICKED_UP", "IN_TRANSIT"] },
+  });
+
+  if (activeRide) {
+    switch (ridingStatus) {
+      case "waiting_for_pickup":
+        activeRide.rideStatus = "ACCEPTED";
+        break;
+      case "in_transit":
+        activeRide.rideStatus = "IN_TRANSIT";
+        break;
+      case "idle":
+      case "unavailable":
+        // Optionally, cancel or pause ride if needed
+        break;
+    }
+    await activeRide.save();
+  }
+
   return driver;
 };
 
+
 const updateLocation = async (driverId: string, payload : any) => {
   const location = payload
-  console.log(location)
+  
   const driver = await Driver.findById(driverId);
   if (!driver) {
     throw new AppError(httpStatus.NOT_FOUND, "Driver not found");
@@ -168,14 +191,29 @@ const updateLocation = async (driverId: string, payload : any) => {
   return driver;
 };
 
+// const getMyProfile = async (driverId: string) => {
+//   return await Driver.findOne({userId:driverId})
+// };
+const getMyProfile = async (driverId: string) => {
+  return await Driver.findOne({userId:driverId})
+};
 
+const updateMyProfile = async (driverId: string, payload: any) => {
+  return await Driver.findOneAndUpdate(
+    { userId: driverId },
+    { $set: payload },   
+    { new: true }
+  );
+};
+ 
 
 
 export const DriverService = {
+  getMyProfile,
+updateMyProfile,
   applyAsDriver,
   approveDriver,
  suspendDriver,
-
   getAllDrivers,
   getSingleDriver,
   updateDriver,

@@ -9,6 +9,7 @@ import { userServices } from "./user.service";
 import { sendResponse } from "../../utils/sendResponse";
 import { JwtPayload } from "jsonwebtoken";
 import { catchAsync } from "../../utils/catchAsync";
+import { User } from "./user.model";
 
 
 const createUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -24,9 +25,12 @@ const createUser = catchAsync(async (req: Request, res: Response, next: NextFunc
 const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.params.id
     const verifiedToken = req.user
-
     const payload = req.body
+ 
+    
+
     const user = await userServices.updateUser(userId, payload, verifiedToken as JwtPayload)
+   
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.CREATED,
@@ -37,6 +41,7 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
 
 const getAllUsers = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const query = req.query;
+     console.log("Query received:", query);
     const result = await userServices.getAllUsers(query as Record<string, string>);
 
     sendResponse(res, {
@@ -47,6 +52,8 @@ const getAllUsers = catchAsync(async (req: Request, res: Response, next: NextFun
         meta: result.meta
     })
 })
+
+
 const getSingleUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const id = req.params.id;
     const result = await userServices.getSingleUser(id);
@@ -81,7 +88,24 @@ const updateUserStatus = catchAsync(async (req: Request, res: Response) => {
     data: updatedUser,
   });
 });
+
+ const getAdminStatsController = catchAsync (async (req: Request, res: Response, next: NextFunction) => {
+
+    const stats = await userServices.getAdminStatsService();
+    console.log(stats)
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Admin analytics fetched successfully",
+    data:stats,
+  });
+})
+
+
 export const userControllers = {
+   
+    getAdminStatsController,
     createUser,
     getAllUsers,
     updateUser,

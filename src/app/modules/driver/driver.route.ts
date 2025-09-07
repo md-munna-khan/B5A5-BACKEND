@@ -11,12 +11,27 @@ const router = Router();
 
 // Rider applies to be a driver
 router.post(
-  "/apply",
+  "/apply-driver",
   checkAuth(Role.RIDER),
   multerUpload.single("file"),
   validateRequest(createDriverZodSchema),
   DriverControllers.applyAsDriver
 );
+
+// driver.route.ts
+router.get("/me", checkAuth(Role.DRIVER), 
+DriverControllers.getMyProfile);
+
+// Update current driver profile
+router.patch(
+  "/me",
+  checkAuth(Role.DRIVER),
+
+  DriverControllers.updateMyProfile
+);
+
+
+
 
 // Admin approves a driver application
 router.patch(
@@ -27,7 +42,9 @@ router.patch(
 
 
 // Suspend driver
-router.patch('/suspend/:id', checkAuth(Role.ADMIN), DriverControllers.suspendDriver);
+router.patch('/suspend/:id',
+   checkAuth(Role.ADMIN), 
+   DriverControllers.suspendDriver);
 
 // Get all drivers (admin, super admin)
 router.get(
@@ -48,7 +65,7 @@ router.get(
 // Update driver info (admin, super admin)
 router.patch(
   "/:id",
-  checkAuth(Role.ADMIN, Role.DRIVER),
+  checkAuth(Role.ADMIN),
   validateRequest(updateDriverZodSchema),
   DriverControllers.updateDriver
 );

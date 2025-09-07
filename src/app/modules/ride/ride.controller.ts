@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status-codes";
@@ -6,26 +7,17 @@ import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import { JwtPayload } from "jsonwebtoken";
 import { IDriverFeedback, IRiderFeedback } from "./ride.interface";
+import { RideModel } from "./ride.model";
 
-// const requestRide = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-//   const rider = req.user as JwtPayload;
-//   const riderId  = rider.userId 
-//   const rideData = req.body;
-//   const result = await RideService.requestRide(riderId, rideData);
 
-//   sendResponse(res, {
-//     success: true,
-//     statusCode: httpStatus.CREATED,
-//     message: "Ride requested successfully",
-//     data: result,
-//   });
-// });
 
  const requestRide = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const rider = req.user as JwtPayload;
     const riderId = rider.userId;
     const rideData = req.body;
+
+    
 
     const result = await RideService.requestRide(riderId, rideData);
 
@@ -39,12 +31,29 @@ import { IDriverFeedback, IRiderFeedback } from "./ride.interface";
 );
 
 
-const cancelRide = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
- const rider = req.user as JwtPayload;
-  const riderId  = rider.userId 
-  const ridesId = req.params.id;
-  const result = await RideService.cancelRide(riderId, ridesId);
+// const cancelRide = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+//  const rider = req.user as JwtPayload;
+//   const riderId  = rider.userId 
+//   const ridesId = req.params.id;
+//   const result = await RideService.cancelRide(riderId, ridesId);
 
+//   sendResponse(res, {
+//     success: true,
+//     statusCode: httpStatus.OK,
+//     message: "Ride cancelled successfully",
+//     data: result,
+//   });
+// });
+
+const cancelRide = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  const user = req.user as JwtPayload; 
+  const rideId = req.params.id;
+
+ 
+  const result = await RideService.cancelRide(
+    { userId: user.userId, role: user.role },
+    rideId
+  );
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
@@ -53,10 +62,24 @@ const cancelRide = catchAsync(async (req: Request, res: Response, next: NextFunc
   });
 });
 
+
 const getRiderRides = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const rider = req.user as JwtPayload;
-  const riderId  = rider.userId 
-  const result = await RideService.getRiderRides(riderId);
+  const riderId = rider.userId;
+
+  // query params from frontend
+  const { page = 1, limit = 10, status, startDate, endDate, minFare, maxFare } = req.query;
+
+  const result = await RideService.getRiderRides(
+    riderId,
+    Number(page),
+    Number(limit),
+    status as string,
+    startDate as string,
+    endDate as string,
+    minFare ? Number(minFare) : undefined,
+    maxFare ? Number(maxFare) : undefined
+  );
 
   sendResponse(res, {
     success: true,
@@ -65,6 +88,7 @@ const getRiderRides = catchAsync(async (req: Request, res: Response, next: NextF
     data: result,
   });
 });
+
 
 const getAvailableRides = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const result = await RideService.getAvailableRides();
@@ -76,7 +100,23 @@ const getAvailableRides = catchAsync(async (req: Request, res: Response, next: N
     data: result,
   });
 });
+// Get active rides (driver's rides in progress)
+export const getActiveRides = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  const driver = req.user as any; // JwtPayload
+  const driverId = driver.userId;
 
+  const rides = await RideModel.find({
+    driverId,
+    rideStatus: { $in: ["ACCEPTED", "PICKED_UP", "IN_TRANSIT"] },
+  });
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Active rides retrieved successfully",
+    data: rides,
+  });
+});
 const acceptRide = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const driver = req.user as JwtPayload;
   const driverId  = driver.userId 
@@ -148,18 +188,28 @@ const completeRide = catchAsync(async (req: Request, res: Response, next: NextFu
   });
 });
 
-const getDriverRides = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-  const driver = req.user as JwtPayload;
-  const driverId  = driver.userId 
-  const result = await RideService.getDriverRides(driverId);
+const getDriverRides = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const driver = req.user as JwtPayload;
+    const driverId = driver.userId;
 
-  sendResponse(res, {
-    success: true,
-    statusCode: httpStatus.OK,
-    message: "Driver's rides retrieved successfully",
-    data: result,
-  });
-});
+    const { status, page = 1, limit = 10 } = req.query;
+
+    const result = await RideService.getDriverRides(
+      driverId,
+      status as string,
+      Number(page),
+      Number(limit)
+    );
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Driver's rides retrieved successfully",
+      data: result,
+    });
+  }
+);
 
 const getAllRides = catchAsync(async (_req: Request, res: Response, next: NextFunction) => {
   const result = await RideService.getAllRides();
@@ -172,12 +222,24 @@ const getAllRides = catchAsync(async (_req: Request, res: Response, next: NextFu
   });
 });
 
+const getRequestedRides = catchAsync(async (_req: Request, res: Response, _next: NextFunction) => {
+  const result = await RideService.getRequestedRides();
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Requested rides fetched successfully",
+    data: result,
+  });
+});
+
 const getDriverEarnings = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const driver = req.user as JwtPayload;
     const driverId = driver.userId;
 
     const result = await RideService.getDriverEarnings(driverId);
+   
 
     sendResponse(res, {
       success: true,
@@ -237,8 +299,57 @@ const giveRiderFeedback = catchAsync(
   });
 });
 
+
+const getRideById = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+const rideId = req.params.id;
+console.log(rideId)
+
+  const ride = await RideService.getRideById(rideId);
+
+
+  res.status(200).json({
+    success: true,
+    message: "Ride fetched successfully",
+    data: ride,
+  });
+});
+
+export const getRidesOversight = catchAsync(async (req: Request, res: Response) => {
+  const { rideStatus, driverId, riderId, startDate, endDate, page = 1, limit = 20 } = req.query;
+
+  const filter: any = {};
+
+  if (rideStatus) filter.rideStatus =rideStatus;
+  if (driverId) filter.driverId = driverId;
+  if (riderId) filter.riderId = riderId;
+  if (startDate || endDate) {
+    filter.createdAt = {};
+    if (startDate) filter.createdAt.$gte = new Date(startDate as string);
+    if (endDate) filter.createdAt.$lte = new Date(endDate as string);
+  }
+
+  const rides = await RideModel.find(filter)
+    .populate("driverId", "name email")
+    .populate("riderId", "name email")
+    .sort({ createdAt: -1 })
+    .skip((+page - 1) * +limit)
+    .limit(+limit);
+
+  const total = await RideModel.countDocuments(filter);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Rides fetched successfully",
+    data: rides,
+    meta: { page: +page, limit: +limit, total,totalPage: Math.ceil(total / +limit)  },
+  });
+});
 export const RideControllers = {
+  getRidesOversight,
+  getRideById,
   getDriverEarnings,
+  getActiveRides,
   requestRide,
   cancelRide,
   getRiderRides,
@@ -252,5 +363,6 @@ export const RideControllers = {
   getAllRides,
   giveRiderFeedback,
   giveDriverFeedback,
-  updateRideStatus
+  updateRideStatus,
+  getRequestedRides
 };

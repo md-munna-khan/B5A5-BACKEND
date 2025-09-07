@@ -1,6 +1,8 @@
 import { Types } from "mongoose";
 
-export type RideStatus = "REQUESTED" | "ACCEPTED" | "COMPLETED" | "CANCELLED" |"IN_TRANSIT"|"PICKED_UP"|"Rejected";
+export type RideStatus = "REQUESTED" | "ACCEPTED" | "COMPLETED" | "CANCELLED" |"IN_TRANSIT"| "PICKED_UP"|"REJECTED";
+
+export type PaymentMethod = "CASH" | "CARD" | "WALLET";
 
 export interface ILocation {
   type: 'Point';
@@ -24,14 +26,19 @@ export interface IRide {
   rideStatus?: RideStatus;
   rejectedDrivers?: Types.ObjectId[];
   fare?: number;
+    // ✅ Payment
+  paymentMethod: PaymentMethod;
+  paymentStatus?: "PENDING" | "PAID" | "FAILED";
   timestamps: {
     requestedAt: Date;
     acceptedAt?: Date;
     completedAt?: Date;
+     cancelledAt?:Date
   };
 
  riderFeedback?:IRiderFeedback;
  driverFeedback?: IDriverFeedback;
   createdAt?: Date;
   updatedAt?: Date;
+ 
 }

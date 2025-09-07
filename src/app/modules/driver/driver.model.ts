@@ -18,7 +18,7 @@ const DriverSchema = new Schema(
         default: 'Point',
       },
       coordinates: {
-        type: [Number, Number],
+        type: [Number],
         required: true,
       },
     },

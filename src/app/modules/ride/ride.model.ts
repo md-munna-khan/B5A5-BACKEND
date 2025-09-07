@@ -21,6 +21,7 @@ const locationSchema = new Schema(
 );
 
 
+
 const rideSchema = new Schema<IRide>(
   {
     riderId: { type: Schema.Types.ObjectId, required: true, ref: "User" },
@@ -29,9 +30,23 @@ const rideSchema = new Schema<IRide>(
     destination: { type: locationSchema, required: true },
     rideStatus: {
       type: String,
-      enum: ["REQUESTED", "ACCEPTED", "COMPLETED", "CANCELLED","IN_TRANSIT","PICKED_UP","Rejected"],
+      enum: ["REQUESTED", "ACCEPTED",  "COMPLETED", "CANCELLED","IN_TRANSIT","PICKED_UP","REJECTED"],
       default: "REQUESTED",
     },
+
+   // ✅ Payment fields
+    paymentMethod: {
+      type: String,
+      enum: ["CASH", "CARD", "WALLET"],
+      required: true,
+    },
+    paymentStatus: {
+      type: String,
+      enum: ["PENDING", "PAID", "FAILED"],
+      default: "PENDING",
+    },
+    
+
        riderFeedback: {
       rating: { type: Number, min: 1, max: 5 },
       feedback: { type: String, maxlength: 500 },
@@ -46,6 +61,7 @@ const rideSchema = new Schema<IRide>(
       requestedAt: { type: Date, required: true, default: Date.now },
       acceptedAt: { type: Date },
       completedAt: { type: Date },
+      cancelledAt: { type: Date },
     },
   },
   
@@ -56,4 +72,4 @@ const rideSchema = new Schema<IRide>(
 
 
 
-export const RideModel = model<IRide>("Ride", rideSchema);
+export const  RideModel = model<IRide>("Ride", rideSchema);

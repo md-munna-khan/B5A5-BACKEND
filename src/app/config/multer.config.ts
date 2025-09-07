@@ -5,7 +5,7 @@ import { CloudinaryStorage } from "multer-storage-cloudinary";
 
 const storage = new CloudinaryStorage({
     cloudinary: cloudinaryUpload,
-    params: {
+    params: { 
         public_id: (req, file) => {
             const fileName = file.originalname
                 .toLowerCase()
