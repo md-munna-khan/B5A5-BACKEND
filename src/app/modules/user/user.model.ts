@@ -1,7 +1,8 @@
-import { Schema, model } from "mongoose";
+import { Schema,  model } from "mongoose";
 import { IUser, Role, UserStatus } from "./user.interface"; // adjust path as needed
 
 const userSchema = new Schema<IUser>(
+  
   {
     name: {
       type: String,
