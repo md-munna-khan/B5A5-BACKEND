@@ -8,12 +8,14 @@ import { Role } from "./user.interface";
 
 const router = Router();
 // Admin analytics
-router.get("/admin", checkAuth(Role.ADMIN),userControllers. getAdminStatsController)
+router.get("/admin", checkAuth(Role.ADMIN),
+userControllers. getAdminStatsController)
 
 router.get("/all-users", checkAuth(Role.ADMIN),
  userControllers.getAllUsers);
 
-router.get("/me", checkAuth(...Object.values(Role)), userControllers.getMe);
+router.get("/me", checkAuth(...Object.values(Role)), 
+userControllers.getMe);
 
 router.post(
   "/register",

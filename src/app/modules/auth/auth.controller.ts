@@ -24,13 +24,23 @@ const credentialsLogin = catchAsync(async (req: Request, res: Response, next: Ne
 
             return next(new AppError(401, err))
         }
-
-
         if (!user) {
             // console.log("from !user");
             // return new AppError(401, info.message)
             return next(new AppError(401, info.message))
         }
+  // ✅ Check if user is blocked or suspended
+    //   if (user.status === "BLOCKED" || user.status === "Suspended") {
+    //     const { password, ...rest } = user.toObject();
+    //     return sendResponse(res, {
+    //       success: true,
+    //       statusCode: httpStatus.OK,
+    //       message: `User is ${user.status}`,
+    //       data: rest, // return user info without password
+    //     });
+    //   }
+
+
 
         const userTokens = await createUserToken(user)
 

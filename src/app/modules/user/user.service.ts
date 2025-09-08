@@ -51,23 +51,6 @@ const getAllUsers = async (query: Record<string, string>) => {
     usersData.build(),
     queryBuilder.getMeta(),
   ]);
-
-  
-  // const usersWithDriverId = await Promise.all(
-  //   data.map(async (user) => {
-  //     if (user.role === "DRIVER") {
-  //       const driver = await Driver.findOne({ userId: user._id });
-  //       return {
-  //         ...user.toObject(),
-  //         driverId: driver?._id || null, // driverId attach
-  //         driverStatus: driver?.status || null,
-  //       };
-  //     }
-  //     return user.toObject();
-  //   })
-  // );
-
-
   const usersWithDriverId = await Promise.all(
   data.map(async (user) => {
     // Check if a Driver record exists for this user
@@ -144,7 +127,8 @@ const getSingleUser = async (id: string) => {
   };
 };
 const getMe = async (userId: string) => {
-  const user = await User.findById(userId).select("-password");
+  const user = await User.findById(userId).select("-password")
+ 
   return {
     data: user,
   };

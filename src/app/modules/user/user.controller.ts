@@ -9,7 +9,7 @@ import { userServices } from "./user.service";
 import { sendResponse } from "../../utils/sendResponse";
 import { JwtPayload } from "jsonwebtoken";
 import { catchAsync } from "../../utils/catchAsync";
-import { User } from "./user.model";
+
 
 
 const createUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -67,6 +67,7 @@ const getSingleUser = catchAsync(async (req: Request, res: Response, next: NextF
 const getMe = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const decodedToken = req.user as JwtPayload
     const result = await userServices.getMe(decodedToken.userId);
+    console.log(result)
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.OK,
