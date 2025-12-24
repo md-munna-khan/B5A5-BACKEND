@@ -5,7 +5,7 @@ import AppError from '../../errorHelpers/AppError';
 import { IAuthProvider,  UserStatus } from "../user/user.interface"
 import httpStatus from 'http-status-codes';
 import { User } from "../user/user.model";
-import { generateToken, verifyToken } from "../../utils/jwt";
+
 import { envVars } from '../../config/env';
 import { createNewAccessTokenWithRefreshToken, createUserToken } from "../../utils/userToken";
 import { JwtPayload } from "jsonwebtoken";

@@ -21,7 +21,7 @@ location?: {
   totalEarning?: number;
   drivingLicense?: string; 
 
-  status?: 'Approved' | 'Pending' | 'Suspended';
+  status?: 'APPROVED' | 'PENDING' | 'SUSPENDED';
   rating?: number;
   rideHistory?: Types.ObjectId[];
 

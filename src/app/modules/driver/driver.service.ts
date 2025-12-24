@@ -12,7 +12,7 @@ import { RideModel } from "../ride/ride.model";
 const applyAsDriver = async (user: any, payload: IDriver) => {
   // Check if user has already applied
   const existing = await Driver.findOne({ userId: user.userId });
-  console.log(existing)
+ 
   if (existing) {
     throw new AppError(httpStatus.BAD_REQUEST, "You have already applied as a driver");
   }
@@ -23,7 +23,7 @@ const applyAsDriver = async (user: any, payload: IDriver) => {
     status: "Pending", // initially pending
   };
 
-  console.log(driverData)
+  
 
   const newDriver = await Driver.create(driverData);
   return newDriver;
@@ -39,12 +39,12 @@ const approveDriver = async (driverId: string) => {
     throw new AppError(httpStatus.NOT_FOUND, "Driver not found");
   }
 
-  if (driver.status === "Approved") {
+  if (driver.status === "APPROVED") {
     throw new AppError(httpStatus.BAD_REQUEST, "Driver is already approved");
   }
 
   // Update the driver status
-  driver.status = "Approved";
+  driver.status = "APPROVED";
   await driver.save();
 
   // Update the user's role to 'DRIVER' if userId exists
@@ -62,12 +62,12 @@ const suspendDriver = async (driverId: string) => {
     throw new AppError(httpStatus.NOT_FOUND, "Driver not found");
   }
 
-  if (driver.status === "Suspended") {
+  if (driver.status === "SUSPENDED") {
     throw new AppError(httpStatus.BAD_REQUEST, "Driver is already suspended");
   }
 
   // Update the driver status
-  driver.status = "Suspended";
+  driver.status = "SUSPENDED";
   await driver.save();
 
   // Optional: Downgrade user role to 'USER'

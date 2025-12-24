@@ -30,7 +30,7 @@ passport.use(
                 }
 
 
-                if (isUserExist && isUserExist.status === UserStatus.BLOCKED) {
+                if (isUserExist && (isUserExist.status === UserStatus.BLOCKED || isUserExist.status === UserStatus.SUSPENDED)) {
         return done(null, false, { message: `User is ${isUserExist.status}` });
          }
                 if (isUserExist.isDeleted) {
@@ -79,7 +79,7 @@ passport.use(
                     return done(null, false, { message: "User is not verified" })
                 }
 
-               if (isUserExist && isUserExist.status === UserStatus.BLOCKED) {
+               if (isUserExist && (isUserExist.status === UserStatus.BLOCKED || isUserExist.status === UserStatus.SUSPENDED)) {
         return done(null, false, { message: `User is ${isUserExist.status}` });
          }
 

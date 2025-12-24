@@ -17,10 +17,7 @@ import { IDriver } from "./driver.interface";
 const applyAsDriver = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const user = req.user as JwtPayload;
 
-  // const payload =  {
-  //   ...req.body,
-  //   drivingLicense: req.file?.path,
-  // }
+
   const payload:IDriver = {
  userId: user.userId,
   vehicle: {
@@ -35,7 +32,7 @@ const applyAsDriver = catchAsync(async (req: Request, res: Response, next: NextF
 };
 
 
-  console.log(payload)
+ 
 
   const result = await DriverService.applyAsDriver(user, payload);
 
@@ -196,7 +193,7 @@ const getMyProfile = catchAsync(async (req: Request, res: Response, next: NextFu
 const updateMyProfile = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const driver = req.user as JwtPayload;
   const result = await DriverService.updateMyProfile(driver.userId, req.body);
-console.log(result)
+
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,

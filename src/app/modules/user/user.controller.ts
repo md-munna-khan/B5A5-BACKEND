@@ -13,7 +13,13 @@ import { catchAsync } from "../../utils/catchAsync";
 
 
 const createUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const user = await userServices.createUser(req.body)
+   
+
+     const payload ={
+        ...req.body,
+        picture: req.file?.path,
+     }
+        const user = await userServices.createUser(payload);
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.CREATED,
@@ -41,7 +47,7 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
 
 const getAllUsers = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const query = req.query;
-     console.log("Query received:", query);
+
     const result = await userServices.getAllUsers(query as Record<string, string>);
 
     sendResponse(res, {
@@ -67,7 +73,7 @@ const getSingleUser = catchAsync(async (req: Request, res: Response, next: NextF
 const getMe = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const decodedToken = req.user as JwtPayload
     const result = await userServices.getMe(decodedToken.userId);
-    console.log(result)
+    
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.OK,
@@ -93,7 +99,7 @@ const updateUserStatus = catchAsync(async (req: Request, res: Response) => {
  const getAdminStatsController = catchAsync (async (req: Request, res: Response, next: NextFunction) => {
 
     const stats = await userServices.getAdminStatsService();
-    console.log(stats)
+  
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

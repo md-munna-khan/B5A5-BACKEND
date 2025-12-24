@@ -18,7 +18,7 @@ const userSchema = new Schema<IUser>(
     },
 
     password: {
-      type: String,
+      type: String ,
      
     },
 

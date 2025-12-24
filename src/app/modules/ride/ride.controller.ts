@@ -302,7 +302,7 @@ const giveRiderFeedback = catchAsync(
 
 const getRideById = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 const rideId = req.params.id;
-console.log(rideId)
+
 
   const ride = await RideService.getRideById(rideId);
 

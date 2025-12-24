@@ -12,8 +12,8 @@ import { Driver } from "../driver/driver.model";
 import { RideModel } from "../ride/ride.model";
 
 const createUser = async (payload: Partial<IUser>) => {
-  const { email, password, ...rest } = payload;
-
+  const { email, password,picture, ...rest } = payload;
+console.log(picture)
   const isUserExist = await User.findOne({ email });
 
   if (isUserExist) {
@@ -30,6 +30,7 @@ const createUser = async (payload: Partial<IUser>) => {
   const user = await User.create({
     email,
     password: hashedPassword,
+    picture,
     auths: [authProvider],
     ...rest,
   });

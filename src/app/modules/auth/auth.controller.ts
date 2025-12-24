@@ -13,6 +13,8 @@ import { JwtPayload } from "jsonwebtoken";
 import { createUserToken } from "../../utils/userToken";
 import { envVars } from "../../config/env";
 import passport from "passport";
+import { Driver } from "../driver/driver.model";
+import { Role } from "../user/user.interface";
 
 
 
@@ -21,25 +23,29 @@ const credentialsLogin = catchAsync(async (req: Request, res: Response, next: Ne
     passport.authenticate("local", async (err: any, user: any, info: any) => {
         if (err) {
 
-
             return next(new AppError(401, err))
         }
         if (!user) {
-            // console.log("from !user");
-            // return new AppError(401, info.message)
+           
             return next(new AppError(401, info.message))
         }
-  // ✅ Check if user is blocked or suspended
-    //   if (user.status === "BLOCKED" || user.status === "Suspended") {
-    //     const { password, ...rest } = user.toObject();
-    //     return sendResponse(res, {
-    //       success: true,
-    //       statusCode: httpStatus.OK,
-    //       message: `User is ${user.status}`,
-    //       data: rest, // return user info without password
-    //     });
-    //   }
+  
+if (user.status === "BLOCKED" || user.status === "SUSPENDED") {
+            return next(new AppError(403, `Your account has been ${user.status.toLowerCase()}. Please contact support.`))
+        }
 
+        // If the user is a driver, also check the driver profile status
+        if (user.role === Role.DRIVER) {
+            const driver = await Driver.findOne({ userId: user._id });
+            if (driver) {
+                if (driver.status === "SUSPENDED") {
+                    return next(new AppError(403, `Your driver account has been suspended. Please contact support.`));
+                }
+                if (driver.status !== "APPROVED") {
+                    return next(new AppError(403, `Your driver account is ${driver.status.toLowerCase()}. Please complete the required steps.`));
+                }
+            }
+        }
 
 
         const userTokens = await createUserToken(user)

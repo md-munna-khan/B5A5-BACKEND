@@ -207,7 +207,7 @@ const acceptRide = async (driverId: string, rideId: string) => {
   const driverDoc = await Driver.findOne({ userId: driverId });
   if (!driverDoc)
     throw new AppError(httpStatus.NOT_FOUND, "Driver profile not found.");
-  if (driverDoc.status !== "Approved")
+  if (driverDoc.status !== "APPROVED")
     throw new AppError(httpStatus.FORBIDDEN, "Driver is not approved.");
   if (driverDoc.isOnRide)
     throw new AppError(

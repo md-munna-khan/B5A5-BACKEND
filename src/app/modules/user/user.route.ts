@@ -5,6 +5,7 @@ import { userControllers } from "./user.controller";
 import { createUserZodSchema, updateUserZodSchema } from "./user.validation";
 import { checkAuth } from "../../middlewares/checkAuth";
 import { Role } from "./user.interface";
+import { multerUpload } from "../../config/multer.config";
 
 const router = Router();
 // Admin analytics
@@ -19,6 +20,7 @@ userControllers.getMe);
 
 router.post(
   "/register",
+   multerUpload.single("file"),
   validateRequest(createUserZodSchema),
   userControllers.createUser
 );

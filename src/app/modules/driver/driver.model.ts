@@ -45,8 +45,8 @@ const DriverSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ['Approved', 'Pending', 'Suspended'],
-      default: 'Pending',
+      enum: ['APPROVED', 'PENDING', 'SUSPENDED'],
+      default: 'PENDING',
     },
     rating: {
       type: Number,

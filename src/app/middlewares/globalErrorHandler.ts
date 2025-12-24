@@ -13,7 +13,7 @@ import { deleteImageFromCloudinary } from "../config/cloudinary.config";
 
 export const globalErrorHandler = async (err: any, req: Request, res: Response, next: NextFunction) => {
     if (envVars.NODE_ENV === "development") {
-        console.log(err);
+      console.error("Global Error:", err?.message || err);
     }
 
     // for cloudinary 

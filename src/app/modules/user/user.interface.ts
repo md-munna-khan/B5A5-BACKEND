@@ -8,7 +8,8 @@ export enum Role {
 
 export enum UserStatus {
   BLOCKED = "BLOCKED",
-  UNBLOCKED = "UNBLOCKED"
+  UNBLOCKED = "UNBLOCKED",
+  SUSPENDED = "SUSPENDED"
 }
 
 export interface IAuthProvider {

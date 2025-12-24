@@ -25,6 +25,7 @@ export const checkAuth = (...authRoles: string[]) => async (req: Request, res: R
 
         const verifiedToken = verifyToken(accessToken, envVars.JWT_ACCESS_SECRET) as JwtPayload
         const isUserExist = await User.findOne({ email: verifiedToken.email })
+        console.log(isUserExist)
        
         if (!isUserExist) {
             throw new AppError(httpStatus.BAD_REQUEST, "User Does Not Exist")
@@ -34,10 +35,8 @@ export const checkAuth = (...authRoles: string[]) => async (req: Request, res: R
             throw new AppError(httpStatus.BAD_REQUEST, "User is not verified")
         }
 
-        // if (isUserExist.isActive === IsActive.BLOCKED || isUserExist.isActive === IsActive.INACTIVE) {
-        //     throw new AppError(httpStatus.BAD_REQUEST, `User Is ${isUserExist.isActive}`)
-        // }
-        if (isUserExist.status === UserStatus.BLOCKED ) {
+   
+        if (isUserExist.status === UserStatus.BLOCKED || isUserExist.status === UserStatus.SUSPENDED) {
             throw new AppError(httpStatus.BAD_REQUEST, `User Is ${isUserExist.status}`)
         }
        
