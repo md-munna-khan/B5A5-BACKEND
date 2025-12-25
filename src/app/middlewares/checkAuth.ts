@@ -25,7 +25,7 @@ export const checkAuth = (...authRoles: string[]) => async (req: Request, res: R
 
         const verifiedToken = verifyToken(accessToken, envVars.JWT_ACCESS_SECRET) as JwtPayload
         const isUserExist = await User.findOne({ email: verifiedToken.email })
-        console.log(isUserExist)
+        // console.log(isUserExist)
        
         if (!isUserExist) {
             throw new AppError(httpStatus.BAD_REQUEST, "User Does Not Exist")

@@ -77,7 +77,7 @@ router.post("/:rideId/driver-ratings",
   checkAuth(Role.DRIVER),
   RideControllers.giveDriverFeedback);
 // rider feedback
-router.put(
+router.post(
   "/:id/feedback",
   checkAuth(Role.RIDER),  
   RideControllers.giveRiderFeedback

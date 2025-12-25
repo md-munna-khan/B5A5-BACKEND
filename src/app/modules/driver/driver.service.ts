@@ -20,7 +20,7 @@ const applyAsDriver = async (user: any, payload: IDriver) => {
   const driverData = {
     ...payload,
     userId: user.userId,
-    status: "Pending", // initially pending
+    status: "PENDING", // initially pending
   };
 
   
@@ -139,7 +139,7 @@ const updateOnlineStatus = async (driverId: string, onlineStatus: 'Active' | 'Of
 
 const updateRidingStatus = async (
   driverId: string,
-  ridingStatus: 'idle' | 'waiting_for_pickup' | 'in_transit' | 'unavailable'
+  ridingStatus: 'idle' | 'waiting_for_pickup' | 'in_transit' | 'complete'
 ) => {
   const driver = await Driver.findById(driverId);
   if (!driver) {
@@ -164,7 +164,7 @@ const updateRidingStatus = async (
         activeRide.rideStatus = "IN_TRANSIT";
         break;
       case "idle":
-      case "unavailable":
+      case "complete":
         // Optionally, cancel or pause ride if needed
         break;
     }

@@ -132,6 +132,10 @@ interface JwtPayload {
   ride.timestamps.cancelledAt = new Date(); // cancel timestamp
 
   await ride.save();
+  // free driver if assigned
+  if (ride.driverId) {
+    await Driver.findOneAndUpdate({ $or: [{ userId: ride.driverId }, { _id: ride.driverId }] }, { ridingStatus: "idle", isOnRide: false });
+  }
   return ride;
 };
 
@@ -242,7 +246,19 @@ const rejectRide = async (rideId: string, driverId: string) => {
     throw new AppError(httpStatus.NOT_FOUND, "Ride not found");
   }
 
-  if (ride.driverId?.toString() !== driverId) {
+  // Allow both representations: ride.driverId might be a User._id (userId) or a Driver._id
+  let assigned = false;
+  if (ride.driverId) {
+    // direct match (user id stored)
+    if (ride.driverId.toString() === driverId) assigned = true;
+    // or ride.driverId stores Driver._id -> check driver's userId
+    if (!assigned) {
+      const driverDoc = await Driver.findById(ride.driverId as any);
+      if (driverDoc && driverDoc.userId?.toString() === driverId) assigned = true;
+    }
+  }
+
+  if (!assigned) {
     throw new AppError(
       httpStatus.FORBIDDEN,
       "You are not assigned to this ride"
@@ -251,6 +267,11 @@ const rejectRide = async (rideId: string, driverId: string) => {
 
   ride.rideStatus = "REJECTED";
   await ride.save();
+
+  // free driver (if any) when rejected
+  if (ride.driverId) {
+    await Driver.findOneAndUpdate({ $or: [{ userId: ride.driverId }, { _id: ride.driverId }] }, { ridingStatus: "idle", isOnRide: false });
+  }
 
   return ride;
 };
@@ -274,6 +295,14 @@ const pickUpRide = async (driverId: string, rideId: string) => {
   ride.rideStatus = "PICKED_UP";
   await ride.save();
 
+  // update driver status to in_transit when pickup is done
+  const driverDoc = await Driver.findOne({ userId: driverId });
+  if (driverDoc) {
+    driverDoc.ridingStatus = "in_transit";
+    driverDoc.isOnRide = true;
+    await driverDoc.save();
+  }
+
   return ride;
 };
 
@@ -291,6 +320,14 @@ const markInTransit = async (driverId: string, rideId: string) => {
 
   ride.rideStatus = "IN_TRANSIT";
   await ride.save();
+
+  // ensure driver riding status is in_transit
+  const driverDoc = await Driver.findOne({ userId: driverId });
+  if (driverDoc) {
+    driverDoc.ridingStatus = "in_transit";
+    driverDoc.isOnRide = true;
+    await driverDoc.save();
+  }
 
   return ride;
 };
@@ -330,6 +367,8 @@ const completeRide = async (driverId: string, rideId: string) => {
   const driverDoc = await Driver.findOne({ userId: driverId });
   if (driverDoc) {
     driverDoc.isOnRide = false;
+    // ensure ridingStatus is reset when ride completes
+    driverDoc.ridingStatus = "idle";
     driverDoc.totalEarning += ride.fare || 0;
     await driverDoc.save();
   }
@@ -445,7 +484,17 @@ const submitDriverFeedback = async (
     throw new AppError(httpStatus.NOT_FOUND, "Ride not found");
   }
 
-  if (!ride.driverId || ride.driverId.toString() !== driverId) {
+  // Allow both representations: ride.driverId might be User._id or Driver._id
+  let driverAssigned = false;
+  if (ride.driverId) {
+    if (ride.driverId.toString() === driverId) driverAssigned = true;
+    if (!driverAssigned) {
+      const driverDoc = await Driver.findById(ride.driverId as any);
+      if (driverDoc && driverDoc.userId?.toString() === driverId) driverAssigned = true;
+    }
+  }
+
+  if (!driverAssigned) {
     throw new AppError(httpStatus.FORBIDDEN, "Not authorized to give feedback");
   }
 
@@ -478,9 +527,32 @@ const updateRideStatus = async (id: string, status: RideStatus) => {
 
   ride.rideStatus = status;
 
-  // Optionally update timestamps
+  // Optionally update timestamps and sync driver riding status
   if (status === "ACCEPTED") {
     ride.timestamps.acceptedAt = new Date();
+
+    if (ride.driverId) {
+      await Driver.findOneAndUpdate(
+        { $or: [{ userId: ride.driverId }, { _id: ride.driverId }] },
+        {
+          ridingStatus: "waiting_for_pickup",
+          isOnRide: true,
+        }
+      );
+    }
+  }
+
+  // When driver picks up the rider, mark driver as in_transit
+  if (status === "PICKED_UP" || status === "IN_TRANSIT") {
+    if (ride.driverId) {
+      await Driver.findOneAndUpdate(
+        { $or: [{ userId: ride.driverId }, { _id: ride.driverId }] },
+        {
+          ridingStatus: "in_transit",
+          isOnRide: true,
+        }
+      );
+    }
   }
 
   if (status === "COMPLETED") {
@@ -490,7 +562,20 @@ const updateRideStatus = async (id: string, status: RideStatus) => {
     if (ride.driverId) {
       // Update ridingStatus to "idle"
       await Driver.findOneAndUpdate(
-        { userId: ride.driverId },
+        { $or: [{ userId: ride.driverId }, { _id: ride.driverId }] },
+        {
+          ridingStatus: "idle",
+          isOnRide: false,
+        }
+      );
+    }
+  }
+
+  // If ride is cancelled or rejected, free the driver
+  if (status === "CANCELLED" || status === "REJECTED") {
+    if (ride.driverId) {
+      await Driver.findOneAndUpdate(
+        { $or: [{ userId: ride.driverId }, { _id: ride.driverId }] },
         {
           ridingStatus: "idle",
           isOnRide: false,

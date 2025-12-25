@@ -136,8 +136,9 @@ const rejectRide = catchAsync(async (req: Request, res: Response) => {
   const driver = req.user as JwtPayload;
   const driverId = driver.userId;
 
-  const result = await RideService.rejectRide(rideId, driverId);
 
+  const result = await RideService.rejectRide(rideId, driverId);
+  console.log(result)
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,

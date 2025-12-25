@@ -13,7 +13,7 @@ import { RideModel } from "../ride/ride.model";
 
 const createUser = async (payload: Partial<IUser>) => {
   const { email, password,picture, ...rest } = payload;
-console.log(picture)
+
   const isUserExist = await User.findOne({ email });
 
   if (isUserExist) {
@@ -37,7 +37,70 @@ console.log(picture)
 
   return user;
 };
+// update User
+const updateUser = async (
+  userId: string,
+  payload: Partial<IUser>,
+  decodedToken: JwtPayload
+) => {
+  const ifUserExist = await User.findById(userId);
 
+  // new
+  if (decodedToken.role === Role.RIDER || decodedToken.role === Role.DRIVER || decodedToken.role === Role.ADMIN) {
+    if (userId !== decodedToken.userId) {
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "You are unauthorized to update another user's profile"
+      );
+    }
+  }
+
+  if (!ifUserExist) {
+    throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
+  }
+  // Only ADMIN can change role, status, isDeleted or isVerified
+  if (payload?.role || payload?.status || payload?.isDeleted || payload?.isVerified) {
+    if (decodedToken.role !== Role.ADMIN) {
+      throw new AppError(httpStatus.FORBIDDEN, "You are not authorized to change role/status/deletion flags");
+    }
+  }
+
+  // If password provided, hash it before saving
+  if (payload?.password) {
+    payload.password = await bcryptjs.hash(payload.password as string, 10);
+  }
+
+  // Whitelist allowed fields to prevent privilege escalation
+  const allowedFields: (keyof IUser)[] = [
+    "name",
+    "email",
+    "phone",
+    "password",
+    "picture",
+    "location",
+    // admin-only handled above: role, status, isDeleted, isVerified are permitted when admin
+  ];
+
+  const updatePayload: Partial<IUser> = {};
+  Object.keys(payload).forEach((key) => {
+    // allow admin to set role/status/isDeleted/isVerified explicitly
+    if (["role", "status", "isDeleted", "isVerified"].includes(key)) {
+      if (decodedToken.role === Role.ADMIN) (updatePayload as any)[key] = (payload as any)[key];
+      return;
+    }
+    if (allowedFields.includes(key as keyof IUser)) {
+      (updatePayload as any)[key] = (payload as any)[key];
+    }
+  });
+
+  const newUpdatedUser = await User.findByIdAndUpdate(userId, updatePayload, {
+    new: true,
+    runValidators: true,
+  }).select("-password");
+
+  return newUpdatedUser;
+};
+ 
 
 const getAllUsers = async (query: Record<string, string>) => {
   const queryBuilder = new QueryBuilder(User.find(), query);
@@ -74,52 +137,6 @@ const getAllUsers = async (query: Record<string, string>) => {
 
 
 
-// update User
-const updateUser = async (
-  userId: string,
-  payload: Partial<IUser>,
-  decodedToken: JwtPayload
-) => {
-  const ifUserExist = await User.findById(userId);
-
-  // new
-  if (decodedToken.role === Role.RIDER || decodedToken.role === Role.DRIVER) {
-    if (userId !== decodedToken.userId) {
-      throw new AppError(
-        httpStatus.FORBIDDEN,
-        "You are unauthorized to update another user's profile"
-      );
-    }
-  }
-
-  if (!ifUserExist) {
-    throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
-  }
-
-  // new
-  // if (decodedToken.role === Role.ADMIN && ifUserExist.role === Role.SUPER_ADMIN) {
-  //     throw new AppError(httpStatus.FORBIDDEN, "You are not authorized to update a super admin profile");
-  // }
-
-  if (payload?.role) {
-    if (decodedToken.role === Role.RIDER || decodedToken.role === Role.DRIVER) {
-      throw new AppError(httpStatus.FORBIDDEN, "You are not authorized");
-    }
-  }
-
-  if (payload?.status || payload?.isDeleted || payload?.isVerified) {
-    if (decodedToken.role === Role.RIDER || decodedToken.role === Role.DRIVER) {
-      throw new AppError(httpStatus.FORBIDDEN, "You are not authorized");
-    }
-  }
-
-  const newUpdatedUser = await User.findByIdAndUpdate(userId, payload, {
-    new: true,
-    runValidators: true,
-  });
-
-  return newUpdatedUser;
-};
 
 const getSingleUser = async (id: string) => {
   const user = await User.findById(id).select("-password");
@@ -142,7 +159,7 @@ const updateUserStatus = async (userId: string, status: UserStatus) => {
   }
 
   const user = await User.findById(userId);
-  console.log(user)
+  
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, "User not found");
   }
@@ -249,7 +266,7 @@ const updateUserStatus = async (userId: string, status: UserStatus) => {
 
   // 5) Top drivers by earnings (sum of fares for rides they completed)
   const topDriversAgg = await RideModel.aggregate([
-    { $match: { driver: { $exists: true, $ne: null }, rideStatus: "COMPLETED" } },
+    { $match: { driverId: { $exists: true, $ne: null }, rideStatus: "COMPLETED" } },
     {
       $group: {
         _id: "$driverId",
@@ -259,32 +276,40 @@ const updateUserStatus = async (userId: string, status: UserStatus) => {
     },
     { $sort: { earnings: -1 } },
     { $limit: 10 },
-    // populate driver fields by $lookup
+    // populate driver doc
     {
       $lookup: {
-        from: "users", // collection name
+        from: "drivers",
         localField: "_id",
         foreignField: "_id",
-        as: "driverInfo",
+        as: "driverDoc",
       },
     },
+    { $unwind: { path: "$driverDoc", preserveNullAndEmptyArrays: true } },
+    // populate user info for the driver
     {
-      $unwind: { path: "$driverInfo", preserveNullAndEmptyArrays: true },
+      $lookup: {
+        from: "users",
+        localField: "driverDoc.userId",
+        foreignField: "_id",
+        as: "driverUser",
+      },
     },
+    { $unwind: { path: "$driverUser", preserveNullAndEmptyArrays: true } },
     {
       $project: {
         driverId: "$_id",
         ridesCount: 1,
         earnings: 1,
-        driverName: "$driverInfo.name",
-        driverEmail: "$driverInfo.email",
-        picture: "$driverInfo.picture",
+        driverName: "$driverUser.name",
+        driverEmail: "$driverUser.email",
+        picture: "$driverUser.picture",
       },
     },
   ]);
 
   // 6) Active drivers count (online now)
-  const activeDriversCount = await Driver.countDocuments({ onlineStatus: true });
+  const activeDriversCount = await Driver.countDocuments({ onlineStatus: "Active" });
 
   // 7) Recent driver activity (last 7 days) — number of rides per day
   const last7 = new Date();

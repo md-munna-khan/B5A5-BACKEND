@@ -60,7 +60,7 @@ location: z.object({
   onlineStatus: z.enum(["Active", "Offline"]).optional(),
 
   ridingStatus: z
-    .enum(["idle", "waiting_for_pickup", "in_transit", "unavailable"])
+    .enum(["idle", "waiting_for_pickup", "in_transit", "complete"])
     .optional(),
 
   isOnRide: z.boolean().optional(),
