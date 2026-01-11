@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-
 import httpStatus from "http-status-codes";
 import { RideModel } from "./ride.model";
 import AppError from "../../errorHelpers/AppError";
@@ -13,7 +12,7 @@ import {
   RideStatus,
 } from "./ride.interface";
 import { Types } from "mongoose";
-import { haversineDistance } from "../../utils/haversine";
+
 import { Role } from "../user/user.interface";
 
 // Rider requests a new ride
@@ -33,72 +32,33 @@ const requestRide = async (riderId: string, rideData: Partial<IRide>) => {
     );
   }
 
-  // 2. Get all drivers who are online and idle
-  const allAvailableDrivers = await Driver.find({
-    onlineStatus: "Active",
-    ridingStatus: "idle",
-    location: { $exists: true },
-  });
-
   // 3. Find the nearest driver using Haversine
   const [pickupLng, pickupLat] = rideData.pickupLocation?.coordinates || [0, 0];
-
-  let nearestDriver = null;
-  let minDistance = Infinity;
-  for (const driver of allAvailableDrivers) {
-    if (!driver.location?.coordinates) continue;
-
-    const [driverLng, driverLat] = driver.location.coordinates;
-
-    const distance = haversineDistance(
-      pickupLat,
-      pickupLng,
-      driverLat,
-      driverLng
-    );
- 
-
-    if (distance < minDistance && distance <= 5000) {
-      minDistance = distance;
-      nearestDriver = driver;
-    }
-  }
-
-  if (!nearestDriver) {
-    throw new AppError(httpStatus.NOT_FOUND, "No available drivers nearby.");
-  }
 
   // 4. Create ride
   const ride = await RideModel.create({
     riderId,
-    driverId: nearestDriver._id,
+
     pickupLocation: rideData.pickupLocation,
     destination: rideData.destination,
-   paymentMethod: rideData.paymentMethod || "CASH",
+    paymentMethod: rideData.paymentMethod || "CASH",
     rideStatus: "REQUESTED",
     timestamps: { requestedAt: new Date() },
     fare: rideData.fare || 0,
   });
 
-  // 5. Update driver status
-  // nearestDriver.ridingStatus = "waiting_for_pickup";
-  // await nearestDriver.save();
-
   return {
     ride,
-    allAvailableDrivers,
+    // allAvailableDrivers,
   };
 };
-
-
-
 
 interface JwtPayload {
   userId: string;
   role: Role;
 }
 
- const cancelRide = async (user: JwtPayload, rideId: string) => {
+const cancelRide = async (user: JwtPayload, rideId: string) => {
   const ride = await RideModel.findById(rideId);
   if (!ride) throw new AppError(httpStatus.NOT_FOUND, "Ride not found.");
 
@@ -121,7 +81,7 @@ interface JwtPayload {
   }
 
   // Only REQUESTED or ACCEPTED rides can be cancelled
-  if (!["REQUESTED", "ACCEPTED"].includes(ride.rideStatus?? "")) {
+  if (!["REQUESTED", "ACCEPTED"].includes(ride.rideStatus ?? "")) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
       "Ride can only be cancelled before pickup."
@@ -134,12 +94,13 @@ interface JwtPayload {
   await ride.save();
   // free driver if assigned
   if (ride.driverId) {
-    await Driver.findOneAndUpdate({ $or: [{ userId: ride.driverId }, { _id: ride.driverId }] }, { ridingStatus: "idle", isOnRide: false });
+    await Driver.findOneAndUpdate(
+      { $or: [{ userId: ride.driverId }, { _id: ride.driverId }] },
+      { ridingStatus: "idle", isOnRide: false }
+    );
   }
   return ride;
 };
-
-
 
 // Rider views own rides
 const getRiderRides = async (
@@ -149,11 +110,10 @@ const getRiderRides = async (
   rideStatus?: string,
   startDate?: string,
   endDate?: string,
-  minFare?: number,  
+  minFare?: number,
   maxFare?: number
 ) => {
   const filter: any = { riderId };
-  
 
   // filter by status
   if (rideStatus) {
@@ -197,7 +157,6 @@ const getRiderRides = async (
   };
 };
 
-
 // Driver views available rides (status: 'REQUESTED')
 const getAvailableRides = async () => {
   const rides = await RideModel.find({ rideStatus: "REQUESTED" }).sort({
@@ -227,7 +186,8 @@ const acceptRide = async (driverId: string, rideId: string) => {
       "Ride already accepted or not available."
     );
 
-  ride.driverId = new Types.ObjectId(driverId);
+  const driverObjId = new Types.ObjectId(driverDoc._id);
+  ride.driverId = driverObjId;
   ride.rideStatus = "ACCEPTED";
   ride.timestamps.acceptedAt = new Date();
   await ride.save();
@@ -245,32 +205,40 @@ const rejectRide = async (rideId: string, driverId: string) => {
   if (!ride) {
     throw new AppError(httpStatus.NOT_FOUND, "Ride not found");
   }
+  const driverObjId = new Types.ObjectId(driverId);
 
-  // Allow both representations: ride.driverId might be a User._id (userId) or a Driver._id
-  let assigned = false;
-  if (ride.driverId) {
-    // direct match (user id stored)
-    if (ride.driverId.toString() === driverId) assigned = true;
-    // or ride.driverId stores Driver._id -> check driver's userId
-    if (!assigned) {
-      const driverDoc = await Driver.findById(ride.driverId as any);
-      if (driverDoc && driverDoc.userId?.toString() === driverId) assigned = true;
-    }
-  }
+  // normalize rejectedDrivers to a safe local array to avoid 'possibly undefined' TS errors
+  const currentRejected = (ride.rejectedDrivers ?? []) as any[];
 
-  if (!assigned) {
+  // check if this driver already rejected (compare stringified ids)
+  const alreadyRejected = currentRejected.some(
+    (d: any) => d.toString() === driverObjId.toString()
+  );
+  if (alreadyRejected) {
     throw new AppError(
-      httpStatus.FORBIDDEN,
-      "You are not assigned to this ride"
+      httpStatus.BAD_REQUEST,
+      "You have already rejected this ride."
     );
   }
 
-  ride.rideStatus = "REJECTED";
+  // add to rejectedDrivers safely
+  ride.rejectedDrivers = [...currentRejected, driverObjId];
+
+  // if this driver was assigned to the ride, unassign and make ride available again
+  const previousDriverId = ride.driverId;
+  if (previousDriverId && previousDriverId.equals(driverObjId)) {
+    ride.driverId = undefined as any;
+    ride.rideStatus = "REQUESTED";
+  }
+
   await ride.save();
 
-  // free driver (if any) when rejected
-  if (ride.driverId) {
-    await Driver.findOneAndUpdate({ $or: [{ userId: ride.driverId }, { _id: ride.driverId }] }, { ridingStatus: "idle", isOnRide: false });
+  // free driver (if any) when rejected - use previousDriverId to ensure we free the right driver
+  if (previousDriverId) {
+    await Driver.findOneAndUpdate(
+      { $or: [{ userId: previousDriverId }, { _id: previousDriverId }] },
+      { ridingStatus: "idle", isOnRide: false }
+    );
   }
 
   return ride;
@@ -416,9 +384,18 @@ const getAllRides = async () => {
   return rides;
 };
 
-const getRequestedRides = async () => {
-  const rides = await RideModel.find({ rideStatus: "REQUESTED" })
-    .sort({ "timestamps.requestedAt": -1 });
+const getRequestedRides = async (driverId: string) => {
+  const driverObjId = new Types.ObjectId(driverId);
+
+  // return only rides that are REQUESTED and where the driver has NOT rejected
+  const rides = await RideModel.find({
+    rideStatus: "REQUESTED",
+    $or: [
+      { rejectedDrivers: { $exists: false } },
+      { rejectedDrivers: { $nin: [driverObjId] } },
+    ],
+  }).sort({ "timestamps.requestedAt": -1 });
+
   return rides;
 };
 
@@ -490,7 +467,8 @@ const submitDriverFeedback = async (
     if (ride.driverId.toString() === driverId) driverAssigned = true;
     if (!driverAssigned) {
       const driverDoc = await Driver.findById(ride.driverId as any);
-      if (driverDoc && driverDoc.userId?.toString() === driverId) driverAssigned = true;
+      if (driverDoc && driverDoc.userId?.toString() === driverId)
+        driverAssigned = true;
     }
   }
 
@@ -591,9 +569,15 @@ const updateRideStatus = async (id: string, status: RideStatus) => {
 
 const getRideById = async (rideId: string) => {
   const ride = await RideModel.findById(rideId)
-    .populate("driverId", "name email phone vehicleType")
-    .populate("riderId", "name email phone")
-   
+    .populate({
+      path: "driverId",
+      select: "vehicle onlineStatus ridingStatus rating userId",
+      populate: {
+        path: "userId",
+        select: "name email phone",
+      },
+    })
+    .populate("riderId", "name email phone");
 
   if (!ride) {
     throw new AppError(httpStatus.NOT_FOUND, "Ride not found");
@@ -601,7 +585,6 @@ const getRideById = async (rideId: string) => {
 
   return ride;
 };
-
 
 export const RideService = {
   getRideById,
@@ -620,9 +603,5 @@ export const RideService = {
   giveRiderFeedback,
   submitDriverFeedback,
   updateRideStatus,
-   getRequestedRides
+  getRequestedRides,
 };
-
-
-
-

@@ -48,7 +48,7 @@ export const updateRideZodSchema = z.object({
   pickupLocation: locationSchema.optional(),
   destination: locationSchema.optional(),
   rideStatus: z.enum(["REQUESTED", "ACCEPTED", "PICKED_UP","COMPLETED","IN_TRANSIT", "CANCELLED","REJECTED"]).optional(),
-  rejectedDrivers: z.array(z.string()).optional(),
+  rejectedDrivers: z.array(z.string()),
   timestamps: z.object({
     requestedAt: z.string().optional(),
     acceptedAt: z.string().optional(),

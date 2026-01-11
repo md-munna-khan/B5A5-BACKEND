@@ -18,6 +18,13 @@ router.post(
   DriverControllers.applyAsDriver
 );
 
+// Get all drivers (admin, super admin)
+router.get(
+  "/all-drivers",
+  checkAuth(Role.ADMIN),
+  DriverControllers.getAllDrivers
+);
+
 // driver.route.ts
 router.get("/me", checkAuth(Role.DRIVER), 
 DriverControllers.getMyProfile);
@@ -46,12 +53,7 @@ router.patch('/suspend/:id',
    checkAuth(Role.ADMIN), 
    DriverControllers.suspendDriver);
 
-// Get all drivers (admin, super admin)
-router.get(
-  "/",
-  checkAuth(Role.ADMIN),
-  DriverControllers.getAllDrivers
-);
+
 
 
 

@@ -5,9 +5,9 @@ const locationSchema = new Schema(
   {
     type: {
       type: String,
-      enum: ['Point'],
+      enum: ["Point"],
       required: true,
-      default: 'Point',
+      default: "Point",
     },
     coordinates: {
       type: [Number], // [longitude, latitude]
@@ -20,21 +20,27 @@ const locationSchema = new Schema(
   { _id: false }
 );
 
-
-
 const rideSchema = new Schema<IRide>(
   {
     riderId: { type: Schema.Types.ObjectId, required: true, ref: "User" },
-    driverId: { type: Schema.Types.ObjectId, ref: "User" },
+    driverId: { type: Schema.Types.ObjectId, ref: "Driver" },
     pickupLocation: { type: locationSchema, required: true },
     destination: { type: locationSchema, required: true },
     rideStatus: {
       type: String,
-      enum: ["REQUESTED", "ACCEPTED",  "COMPLETED", "CANCELLED","IN_TRANSIT","PICKED_UP","REJECTED"],
+      enum: [
+        "REQUESTED",
+        "ACCEPTED",
+        "COMPLETED",
+        "CANCELLED",
+        "IN_TRANSIT",
+        "PICKED_UP",
+        "REJECTED",
+      ],
       default: "REQUESTED",
     },
 
-   // ✅ Payment fields
+    // ✅ Payment fields
     paymentMethod: {
       type: String,
       enum: ["CASH", "CARD", "WALLET"],
@@ -45,17 +51,16 @@ const rideSchema = new Schema<IRide>(
       enum: ["PENDING", "PAID", "FAILED"],
       default: "PENDING",
     },
-    
 
-       riderFeedback: {
+    riderFeedback: {
       rating: { type: Number, min: 1, max: 5 },
       feedback: { type: String, maxlength: 500 },
     },
-  driverFeedback: {
-  rating: { type: Number, min: 1, max: 5 },
-  feedback: { type: String, maxlength: 500 },
-},
-    rejectedDrivers: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    driverFeedback: {
+      rating: { type: Number, min: 1, max: 5 },
+      feedback: { type: String, maxlength: 500 },
+    },
+    rejectedDrivers: [{ type: Schema.Types.ObjectId, ref: "Driver", default: [] }],
     fare: { type: Number },
     timestamps: {
       requestedAt: { type: Date, required: true, default: Date.now },
@@ -64,12 +69,10 @@ const rideSchema = new Schema<IRide>(
       cancelledAt: { type: Date },
     },
   },
-  
+
   {
     timestamps: true,
   }
 );
 
-
-
-export const  RideModel = model<IRide>("Ride", rideSchema);
+export const RideModel = model<IRide>("Ride", rideSchema);
