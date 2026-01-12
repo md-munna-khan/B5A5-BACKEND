@@ -31,19 +31,7 @@ import { RideModel } from "./ride.model";
 );
 
 
-// const cancelRide = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-//  const rider = req.user as JwtPayload;
-//   const riderId  = rider.userId 
-//   const ridesId = req.params.id;
-//   const result = await RideService.cancelRide(riderId, ridesId);
 
-//   sendResponse(res, {
-//     success: true,
-//     statusCode: httpStatus.OK,
-//     message: "Ride cancelled successfully",
-//     data: result,
-//   });
-// });
 
 const cancelRide = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const user = req.user as JwtPayload; 
@@ -132,7 +120,7 @@ const acceptRide = catchAsync(async (req: Request, res: Response, next: NextFunc
 });
 
 const rejectRide = catchAsync(async (req: Request, res: Response) => {
-  const { id: rideId } = req.params;
+  const rideId = req.params.id;
   const driver = req.user as JwtPayload;
   const driverId = driver.userId;
 

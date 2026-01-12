@@ -19,6 +19,75 @@ import { Role } from "../user/user.interface";
 // Rider requests a new ride
 
 // haversine
+// const requestRide = async (riderId: string, rideData: Partial<IRide>) => {
+//   // 1. Check if rider already has an ongoing ride
+//   const ongoingRide = await RideModel.findOne({
+//     riderId,
+//     rideStatus: { $in: ["REQUESTED", "ACCEPTED", "PICKED_UP", "IN_TRANSIT"] },
+//   });
+
+//   if (ongoingRide) {
+//     throw new AppError(
+//       httpStatus.BAD_REQUEST,
+//       "You already have an ongoing ride."
+//     );
+//   }
+
+//   // 2. Get all drivers who are online and idle
+//   const allAvailableDrivers = await Driver.find({
+//     onlineStatus: "Active",
+//     ridingStatus: "idle",
+//     location: { $exists: true },
+//   });
+
+//   // 3. Find the nearest driver using Haversine
+//   const [pickupLng, pickupLat] = rideData.pickupLocation?.coordinates || [0, 0];
+
+//   let nearestDriver = null;
+//   let minDistance = Infinity;
+//   for (const driver of allAvailableDrivers) {
+//     if (!driver.location?.coordinates) continue;
+
+//     const [driverLng, driverLat] = driver.location.coordinates;
+
+//     const distance = haversineDistance(
+//       pickupLat,
+//       pickupLng,
+//       driverLat,
+//       driverLng
+//     );
+ 
+
+//     if (distance < minDistance && distance <= 5000) {
+//       minDistance = distance;
+//       nearestDriver = driver;
+//     }
+//   }
+
+//   if (!nearestDriver) {
+//     throw new AppError(httpStatus.NOT_FOUND, "No available drivers nearby.");
+//   }
+
+//   // 4. Create ride
+//   const ride = await RideModel.create({
+//     riderId,
+//     driverId: nearestDriver._id,
+//     pickupLocation: rideData.pickupLocation,
+//     destination: rideData.destination,
+//    paymentMethod: rideData.paymentMethod || "CASH",
+//     rideStatus: "REQUESTED",
+//     timestamps: { requestedAt: new Date() },
+//     fare: rideData.fare || 0,
+//   });
+
+
+
+//   return {
+//     ride,
+//     allAvailableDrivers,
+//   };
+// };
+
 const requestRide = async (riderId: string, rideData: Partial<IRide>) => {
   // 1. Check if rider already has an ongoing ride
   const ongoingRide = await RideModel.findOne({
@@ -33,63 +102,26 @@ const requestRide = async (riderId: string, rideData: Partial<IRide>) => {
     );
   }
 
-  // 2. Get all drivers who are online and idle
-  const allAvailableDrivers = await Driver.find({
-    onlineStatus: "Active",
-    ridingStatus: "idle",
-    location: { $exists: true },
-  });
-
   // 3. Find the nearest driver using Haversine
   const [pickupLng, pickupLat] = rideData.pickupLocation?.coordinates || [0, 0];
-
-  let nearestDriver = null;
-  let minDistance = Infinity;
-  for (const driver of allAvailableDrivers) {
-    if (!driver.location?.coordinates) continue;
-
-    const [driverLng, driverLat] = driver.location.coordinates;
-
-    const distance = haversineDistance(
-      pickupLat,
-      pickupLng,
-      driverLat,
-      driverLng
-    );
- 
-
-    if (distance < minDistance && distance <= 5000) {
-      minDistance = distance;
-      nearestDriver = driver;
-    }
-  }
-
-  if (!nearestDriver) {
-    throw new AppError(httpStatus.NOT_FOUND, "No available drivers nearby.");
-  }
 
   // 4. Create ride
   const ride = await RideModel.create({
     riderId,
-    driverId: nearestDriver._id,
+
     pickupLocation: rideData.pickupLocation,
     destination: rideData.destination,
-   paymentMethod: rideData.paymentMethod || "CASH",
+    paymentMethod: rideData.paymentMethod || "CASH",
     rideStatus: "REQUESTED",
     timestamps: { requestedAt: new Date() },
     fare: rideData.fare || 0,
   });
 
-  // 5. Update driver status
-  // nearestDriver.ridingStatus = "waiting_for_pickup";
-  // await nearestDriver.save();
-
   return {
     ride,
-    allAvailableDrivers,
+    // allAvailableDrivers,
   };
 };
-
 
 
 
@@ -199,8 +231,20 @@ const getRiderRides = async (
 
 
 // Driver views available rides (status: 'REQUESTED')
-const getAvailableRides = async () => {
-  const rides = await RideModel.find({ rideStatus: "REQUESTED" }).sort({
+// If driverId is provided, exclude rides the driver has previously rejected
+const getAvailableRides = async (driverId?: string) => {
+  const filter: any = { rideStatus: "REQUESTED" };
+
+  if (driverId) {
+    try {
+      filter.rejectedDrivers = { $nin: [new Types.ObjectId(driverId)] };
+    } catch (e) {
+      // fallback to string compare if ObjectId conversion fails
+      filter.rejectedDrivers = { $nin: [driverId] };
+    }
+  }
+
+  const rides = await RideModel.find(filter).sort({
     "timestamps.requestedAt": 1,
   });
   return rides;
@@ -227,6 +271,17 @@ const acceptRide = async (driverId: string, rideId: string) => {
       "Ride already accepted or not available."
     );
 
+  // Prevent a driver who previously rejected this ride from accepting it again
+  if (
+    ride.rejectedDrivers &&
+    ride.rejectedDrivers.some((id: any) => id.toString() === driverId)
+  ) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      "You previously rejected this ride and cannot accept it."
+    );
+  }
+
   ride.driverId = new Types.ObjectId(driverId);
   ride.rideStatus = "ACCEPTED";
   ride.timestamps.acceptedAt = new Date();
@@ -241,27 +296,16 @@ const acceptRide = async (driverId: string, rideId: string) => {
 
 const rejectRide = async (rideId: string, driverId: string) => {
   const ride = await RideModel.findById(rideId);
+  console.log(rideId,driverId)
 
   if (!ride) {
     throw new AppError(httpStatus.NOT_FOUND, "Ride not found");
   }
 
-  // Allow both representations: ride.driverId might be a User._id (userId) or a Driver._id
-  let assigned = false;
-  if (ride.driverId) {
-    // direct match (user id stored)
-    if (ride.driverId.toString() === driverId) assigned = true;
-    // or ride.driverId stores Driver._id -> check driver's userId
-    if (!assigned) {
-      const driverDoc = await Driver.findById(ride.driverId as any);
-      if (driverDoc && driverDoc.userId?.toString() === driverId) assigned = true;
-    }
-  }
-
-  if (!assigned) {
+  if (ride.rideStatus !== "REQUESTED") {
     throw new AppError(
-      httpStatus.FORBIDDEN,
-      "You are not assigned to this ride"
+      httpStatus.BAD_REQUEST,
+      "Only rides with status 'REQUESTED' can be rejected"
     );
   }
 
@@ -276,7 +320,11 @@ const rejectRide = async (rideId: string, driverId: string) => {
   return ride;
 };
 
+
+
 // Driver marks pickup complete
+
+
 const pickUpRide = async (driverId: string, rideId: string) => {
   const ride = await RideModel.findById(rideId);
 

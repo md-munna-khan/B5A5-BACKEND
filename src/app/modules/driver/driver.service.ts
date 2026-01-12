@@ -8,6 +8,7 @@ import { QueryBuilder } from "../../utils/QueryBuilder";
 import { IDriver } from "./driver.interface";
 import { User } from "../user/user.model";
 import { RideModel } from "../ride/ride.model";
+import { driverSearchableFields } from "./driver.constant";
 
 const applyAsDriver = async (user: any, payload: IDriver) => {
   // Check if user has already applied
@@ -80,14 +81,22 @@ const suspendDriver = async (driverId: string) => {
 
 
 
+
 const getAllDrivers = async (query: Record<string, string>) => {
-  const queryBuilder = new QueryBuilder(Driver.find(), query);
-  const driverData = queryBuilder.filter().search([]).sort().fields().paginate();
+  const queryBuilder = new QueryBuilder(Driver.find().populate("userId"), query);
+    const driverData = queryBuilder
+    .filter()
+    .search(driverSearchableFields)
+    .sort()
+    .fields()
+    .paginate()
 
   const [data, meta] = await Promise.all([
     driverData.build(),
     queryBuilder.getMeta(),
   ]);
+
+
 
   return { data, meta };
 };

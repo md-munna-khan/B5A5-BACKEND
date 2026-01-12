@@ -13,13 +13,7 @@ router.get(
   RideControllers.getDriverRides
 );
 
-// Admin gets all rides
-// router.get(
-//   "/",
-//   checkAuth(Role.DRIVER),
-//   RideControllers.getRequestedRides
-// );
-// Admin routes
+
 router.get("/all", checkAuth(Role.ADMIN), RideControllers.getAllRides);
 
 router.get(

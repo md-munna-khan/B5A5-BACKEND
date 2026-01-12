@@ -48,7 +48,7 @@ router.patch('/suspend/:id',
 
 // Get all drivers (admin, super admin)
 router.get(
-  "/",
+  "/all-drivers",
   checkAuth(Role.ADMIN),
   DriverControllers.getAllDrivers
 );
